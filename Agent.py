@@ -218,7 +218,7 @@ class agent(nn.Module):
 
         reward = self.get_reward(self.portfolio_value, self.portfolio_value_static)
         # reward = self.portfolio_value/self.portfolio_value_static + self.portfolio_value/portfolio_value_n - 2
-        reward = reward*100
+        # reward = reward*100
 
         if len(self.environment.chart_data)-1 <= self.environment.idx:
             done = 1
