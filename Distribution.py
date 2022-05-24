@@ -91,13 +91,3 @@ class Dirichlet(ExponentialFamily):
     def _log_normalizer(self, x):
         return x.lgamma().sum(-1) - torch.lgamma(x.sum(-1))
 
-
-if __name__ == "__main__":
-    dirichlet1 = Dirichlet(torch.tensor([3, 0.1, 2]))
-    dirichlet2 = Dirichlet(torch.tensor([30, 1, 20]))
-
-    # sample = dirichlet.sample([1])
-    # log_prob = dirichlet.log_prob(sample)
-    #
-    # print(sample)
-    # print(log_prob)
