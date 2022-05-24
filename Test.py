@@ -14,7 +14,7 @@ device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 
 
 class DIRITester:
-    def __init(self, test_data, balance, min_trading_price, max_trading_price, delta, K, repre="mean"):
+    def __init__(self, test_data, balance, min_trading_price, max_trading_price, delta, K, repre="mean"):
 
         self.test_data = test_data
 
