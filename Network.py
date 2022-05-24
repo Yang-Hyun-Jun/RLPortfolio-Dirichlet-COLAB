@@ -67,8 +67,8 @@ class Actor(nn.Module):
         B = alpha.shape[0] #Batch num
         N = alpha.shape[1] #Asset num
         total = torch.sum(alpha, dim=1).view(B, 1)
-        vector_1 = torch.ones(size=alpha.shape)
-        vector_N = torch.ones(size=(B, 1)) * N
+        vector_1 = torch.ones(size=alpha.shape, device=device)
+        vector_N = torch.ones(size=(B, 1), device=device) * N
 
         #Representative value
         mode = (alpha - vector_1) / (total - vector_N)
