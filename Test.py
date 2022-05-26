@@ -17,7 +17,7 @@ class DIRITester:
     def __init__(self,
                  test_data, balance,
                  min_trading_price, max_trading_price,
-                 delta, K, repre="mean", cost=False):
+                 delta, K, repre="mean", cost=0.0025):
 
         self.test_data = test_data
 

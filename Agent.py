@@ -13,7 +13,7 @@ class agent(nn.Module):
                  critic:nn.Module,
                  critic_target:nn.Module,
                  actor:nn.Module,
-                 lr:float, K:int, cost,
+                 lr:float, K:int, cost:float,
                  tau:float, delta:float,
                  discount_factor:float,
                  min_trading_price:int,
@@ -42,7 +42,7 @@ class agent(nn.Module):
         self.num_stocks = np.array([0] * self.K)
         self.portfolio = np.array([0] * (self.K+1), dtype=float)
 
-        self.TRADING_CHARGE = 0.0025 if cost else 0
+        self.TRADING_CHARGE = cost
         self.TRADING_TEX = 0.0
         self.portfolio_value = 0
         self.initial_balance = 0
