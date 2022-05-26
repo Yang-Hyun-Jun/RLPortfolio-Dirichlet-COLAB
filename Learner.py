@@ -19,7 +19,7 @@ class DIRILearner:
                  tau = 0.005, delta=0.05,
                  discount_factor=0.9,
                  batch_size=30, memory_size=100,
-                 chart_data=None, K=None,
+                 chart_data=None, K=None, cost=False,
                  min_trading_price=None, max_trading_price=None):
 
         assert min_trading_price >= 0
@@ -41,6 +41,7 @@ class DIRILearner:
         self.tau = tau
         self.K = K
         self.delta = delta
+        self.cost = cost
         self.discount_factor = discount_factor
         self.min_trading_price = min_trading_price
         self.max_trading_price = max_trading_price
@@ -48,7 +49,7 @@ class DIRILearner:
         self.agent = agent(environment=self.environment,
                            critic=self.critic, lr=self.lr,
                            critic_target=self.critic_target,
-                           actor=self.actor, K=self.K,
+                           actor=self.actor, K=self.K, cost=self.cost,
                            tau=self.tau, delta=self.delta,
                            discount_factor=self.discount_factor,
                            min_trading_price=min_trading_price,
