@@ -54,12 +54,12 @@ class Actor(nn.Module):
             scores.append(globals()[f"score{j+1}"])
 
         alpha = torch.cat(scores, dim=-1)
-        alpha = torch.tanh(alpha) + 2.0
+        # alpha = torch.tanh(alpha) + 2.0
         return alpha
 
     def sampling(self, s1_tensor, portfolio, repre=False):
         batch_num = s1_tensor.shape[0]
-        cash_alpha = torch.ones(size=(batch_num, 1), device=device) * 2.0
+        cash_alpha = torch.ones(size=(batch_num, 1), device=device) * 1.0
         alpha = torch.cat([cash_alpha, self(s1_tensor, portfolio)], dim=-1)
         dirichlet = Dirichlet(alpha)
 
