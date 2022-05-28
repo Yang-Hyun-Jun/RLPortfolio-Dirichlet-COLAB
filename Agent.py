@@ -117,7 +117,7 @@ class agent(nn.Module):
 
     def get_reward(self, pv, pv_static):
         # reward = (pv-pv_static)/pv_static
-        reward = np.log(pv) - np.log(12000)
+        reward = np.log(pv) - np.log(self.initial_balance)
         return reward
 
     def step(self, action, confidence):
