@@ -187,7 +187,7 @@ class agent(nn.Module):
                 portfolio_n[i+1] += invest_amount/self.portfolio_value
 
             # Hold
-            elif -self.delta <= m_action[i] < self.delta:
+            elif -self.delta <= m_action[i] <= self.delta:
                 m_action[i] = 0.0
         """
         거래로 인한 PV와 PF 변동 계산
