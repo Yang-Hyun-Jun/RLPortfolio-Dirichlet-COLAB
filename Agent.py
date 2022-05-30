@@ -125,11 +125,8 @@ class agent(nn.Module):
         assert 0 <= self.delta < 1
 
         fee = 0
-        portfolio_n = self.portfolio.copy()
-        portfolio_value_n = self.portfolio_value
         close_p1 = self.environment.get_price()
         m_action = self.validate_action(action, self.delta)
-
         self.portfolio_value_static_ = self.portfolio * self.portfolio_value
 
         #전체적으로 종목별 매도 수행을 먼저한다.
@@ -151,10 +148,8 @@ class agent(nn.Module):
                 self.balance += invest_amount * (1-cost)
                 self.portfolio[0] += invest_amount * (1-cost)/self.portfolio_value
                 self.portfolio[i+1] -= invest_amount/self.portfolio_value
-
                 m_action[i] = -invest_amount/self.portfolio_value
-                portfolio_n[0] += invest_amount/self.portfolio_value
-                portfolio_n[i+1] -= invest_amount/self.portfolio_value
+
 
         #다음으로 종목별 매수 수행
         for i in range(m_action.shape[0]):
@@ -181,14 +176,13 @@ class agent(nn.Module):
                 self.balance -= invest_amount * (1+cost)
                 self.portfolio[0] -= invest_amount * (1+cost)/self.portfolio_value
                 self.portfolio[i+1] += invest_amount/self.portfolio_value
-
                 m_action[i] = invest_amount/self.portfolio_value
-                portfolio_n[0] -= invest_amount/self.portfolio_value
-                portfolio_n[i+1] += invest_amount/self.portfolio_value
+
 
             # Hold
             elif -self.delta <= m_action[i] <= self.delta:
                 m_action[i] = 0.0
+
         """
         거래로 인한 PV와 PF 변동 계산
         """
@@ -209,17 +203,7 @@ class agent(nn.Module):
         self.portfolio_value_static = np.dot(self.portfolio_value_static_, self.pi_operator(self.change))
         self.profitloss = ((self.portfolio_value / self.initial_balance) - 1)*100
 
-        """
-        Cost를 적용하지 않은 PF_n, PV_n으로
-        다음 Time step으로 진행 함에 따라
-        생기는 가격 변동에 의한 PF_n, PV_n 계산
-        """
-        pi_vector = self.pi_operator(self.change)
-        portfolio_n = (portfolio_n * pi_vector)/(np.dot(portfolio_n, pi_vector))
-        portfolio_value_n = np.dot(portfolio_value_n * portfolio_n, pi_vector)
-
         reward = self.get_reward(self.portfolio_value, self.portfolio_value_static)
-        # reward = self.portfolio_value/self.portfolio_value_static + self.portfolio_value/portfolio_value_n - 2
         # reward = reward*100
 
         if len(self.environment.chart_data)-1 <= self.environment.idx:

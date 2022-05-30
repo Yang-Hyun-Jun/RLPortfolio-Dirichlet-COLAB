@@ -54,8 +54,8 @@ class Actor(nn.Module):
             scores.append(globals()[f"score{j+1}"])
 
         alpha = torch.cat(scores, dim=-1)
-        # alpha = torch.tanh(alpha) + 2.0
-        alpha = torch.exp(alpha)
+        alpha = torch.tensor(0.5) * torch.tanh(alpha) + 0.5
+        # alpha = torch.exp(alpha)
         return alpha
 
     def sampling(self, s1_tensor, portfolio, repre=False):
