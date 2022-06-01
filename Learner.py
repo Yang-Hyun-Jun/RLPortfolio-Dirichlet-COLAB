@@ -33,10 +33,9 @@ class DIRILearner:
 
         self.score_net_actor = Score().to(device)
         self.score_net_critic = Score().to(device)
-        self.scroe_net_critic_target = Score().to(device)
         self.actor = Actor(score_net=self.score_net_actor).to(device)
         self.critic = Critic(score_net=self.score_net_critic, header_dim=K).to(device)
-        self.critic_target = Critic(score_net=self.scroe_net_critic_target, header_dim=K).to(device)
+        self.critic_target = Critic(score_net=self.score_net_critic, header_dim=K).to(device)
 
         self.lr = lr
         self.tau = tau
