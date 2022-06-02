@@ -69,7 +69,7 @@ class DIRITester:
                                       torch.tensor(portfolio, device=device).float().view(1, self.K + 1, -1), self.repre)
 
             if self.holding:
-                action = agent.check_holding(action, action_)
+                action = self.agent.check_holding(action, action_)
 
             _, next_state1, next_portfolio, reward, done = self.agent.step(action, confidence)
             steps_done += 1
