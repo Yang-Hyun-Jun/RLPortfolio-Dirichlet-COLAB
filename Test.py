@@ -17,7 +17,7 @@ class DIRITester:
     def __init__(self,
                  test_data, balance,
                  min_trading_price, max_trading_price,
-                 delta, K, repre="mean", cost=0.0025):
+                 delta, K, repre="mean", cost=0.0025, holding=False):
 
         self.test_data = test_data
 
@@ -33,6 +33,7 @@ class DIRITester:
         self.repre = repre
         self.delta = delta
         self.cost = cost
+        self.holding = holding
         self.balance = balance
         self.min_trading_price = min_trading_price
         self.max_trading_price = max_trading_price
@@ -61,9 +62,14 @@ class DIRITester:
         steps_done = 0
 
         while True:
+            action_ = np.zeros(shape=self.K) if steps_done == 0 else action
+
             action, confidence, log_prob = \
                 self.agent.get_action(torch.tensor(state1, device=device).float().view(1, self.K, -1),
                                       torch.tensor(portfolio, device=device).float().view(1, self.K + 1, -1), self.repre)
+
+            if self.holding:
+                action = agent.check_holding(action, action_)
 
             _, next_state1, next_portfolio, reward, done = self.agent.step(action, confidence)
             steps_done += 1
