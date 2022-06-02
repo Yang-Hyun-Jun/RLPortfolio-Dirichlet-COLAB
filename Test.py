@@ -74,9 +74,6 @@ class DIRITester:
         steps_done = 0
 
         while True:
-            #전 스텝의 action
-            action_ = np.zeros(shape=self.K) if steps_done == 0 else action
-
             action, confidence, log_prob = \
                 self.agent.get_action(torch.tensor(state1, device=device).float().view(1, self.K, -1),
                                       torch.tensor(portfolio, device=device).float().view(1, self.K + 1, -1), self.repre)
@@ -84,7 +81,7 @@ class DIRITester:
             #3일 단위로 거래
             if self.holding:
                 if steps_done % 3:
-                    action = self.agent.check_holding(action, action_)
+                    action = np.zeros(shape=self.K)
 
             m_action, next_state1, next_portfolio, reward, done = self.agent.step(action, confidence)
             self.check_frequency(m_action)

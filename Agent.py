@@ -93,12 +93,6 @@ class agent(nn.Module):
                     m_action[i] = 0.0 #Hold
         return m_action
 
-    def check_holding(self, action, action_):
-        a = action.copy()
-        a_ = action_.copy()
-        a = np.zeros(shape=self.K)
-        return a
-
     def pi_operator(self, change_rate):
         pi_vector = np.zeros(len(change_rate) + 1)
         pi_vector[0] = 1
