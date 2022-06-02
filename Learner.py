@@ -31,11 +31,17 @@ class DIRILearner:
         self.chart_data = chart_data
         self.batch_size = batch_size
 
-        self.score_net_actor = Score().to(device)
-        self.score_net_critic = Score().to(device)
-        self.actor = Actor(score_net=self.score_net_actor).to(device)
-        self.critic = Critic(score_net=self.score_net_critic, header_dim=K).to(device)
-        self.critic_target = Critic(score_net=self.score_net_critic, header_dim=K).to(device)
+        # self.score_net_actor = Score().to(device)
+        # self.score_net_critic = Score().to(device)
+        # self.actor = Actor(score_net=self.score_net_actor).to(device)
+        # self.critic = Critic(score_net=self.score_net_critic, header_dim=K).to(device)
+        # self.critic_target = Critic(score_net=self.score_net_critic, header_dim=K).to(device)
+
+        self.score_net = Score().to(device)
+        self.score_net_target = Score().to(device)
+        self.actor = Actor(score_net=self.score_net).to(device)
+        self.critic = Critic(score_net=self.score_net, header_dim=K).to(device)
+        self.critic_target = Critic(score_net=self.score_net_target, header_dim=K).to(device)
 
         self.lr = lr
         self.tau = tau
