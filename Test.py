@@ -25,6 +25,10 @@ class DIRITester:
         self.state2_dim = 2
         self.K = K
 
+        self.num_buy = 0
+        self.num_sell = 0
+        self.num_hold = 0
+
         self.score_net = Score().to(device)
         self.actor = Actor(self.score_net).to(device)
         self.critic = Critic(self.score_net, header_dim=self.K).to(device)
@@ -51,6 +55,14 @@ class DIRITester:
         self.agent.actor.load_state_dict(torch.load(actor_path))
         self.agent.actor.score_net.load_state_dict(torch.load(score_path))
 
+    def check_frequency(self, action):
+        for a in action:
+            if a > 0:
+                self.num_buy += 1
+            elif a < 0:
+                self.num_sell += 1
+            elif a == 0:
+                self.num_hold += 1
 
     def run(self):
         metrics = Metrics()
@@ -62,17 +74,21 @@ class DIRITester:
         steps_done = 0
 
         while True:
+            #전 스텝의 action
             action_ = np.zeros(shape=self.K) if steps_done == 0 else action
 
             action, confidence, log_prob = \
                 self.agent.get_action(torch.tensor(state1, device=device).float().view(1, self.K, -1),
                                       torch.tensor(portfolio, device=device).float().view(1, self.K + 1, -1), self.repre)
 
+            #3일 단위로 거래
             if self.holding:
                 if steps_done % 3:
                     action = self.agent.check_holding(action, action_)
 
-            _, next_state1, next_portfolio, reward, done = self.agent.step(action, confidence)
+            m_action, next_state1, next_portfolio, reward, done = self.agent.step(action, confidence)
+            self.check_frequency(m_action)
+
             steps_done += 1
             state1 = next_state1
             portfolio = next_portfolio
@@ -88,7 +104,10 @@ class DIRITester:
                 print(f"portfolio:{self.agent.portfolio}")
                 print(f"cum_fee:{self.agent.cum_fee}")
             if done:
-                print(f"model{self.agent.profitloss}")
+                print(f"model:{self.agent.profitloss}")
+                print(f"num buy:{self.num_buy}")
+                print(f"num sell:{self.num_sell}")
+                print(f"num hold:{self.num_hold}")
                 break
 
 
