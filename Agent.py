@@ -96,9 +96,7 @@ class agent(nn.Module):
     def check_holding(self, action, action_):
         a = action.copy()
         a_ = action_.copy()
-        n = np.linalg.norm(abs(a-a_), ord=2)
-        if n <= 0.10:
-            a = np.zeros(shape=self.K)
+        a = np.zeros(shape=self.K)
         return a
 
     def pi_operator(self, change_rate):
