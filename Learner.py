@@ -123,8 +123,8 @@ class DIRILearner:
                 state1 = next_state1
                 portfolio = next_portfolio
 
-                if done:
-                    break
+                # if done:
+                #     break
 
                 if steps_done % 300 == 0:
                     np.set_printoptions(precision=4, suppress=True)
@@ -179,6 +179,9 @@ class DIRILearner:
                     metrics.portfolio_values.append(self.agent.portfolio_value)
                     metrics.profitlosses.append(self.agent.profitloss)
                     metrics.cum_fees.append(self.agent.cum_fee)
+
+                if done:
+                    break
 
             #시각화 마지막 episode에 대해서만
             if episode == range(num_episode)[-1]:

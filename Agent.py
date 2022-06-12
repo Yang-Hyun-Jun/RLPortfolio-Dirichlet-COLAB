@@ -218,33 +218,32 @@ class agent(nn.Module):
         eps_clip = 0.1
         eps_clip_critic = 0.01
 
-        for _ in range(3):
-            _, log_prob_ = self.actor.sampling(s, pf)
-            pi_old = torch.exp(log_prob)
-            pi_now = torch.exp(log_prob_).view(-1, 1)
-            ratio = pi_now/pi_old
+        _, log_prob_ = self.actor.sampling(s, pf)
+        pi_old = torch.exp(log_prob)
+        pi_now = torch.exp(log_prob_).view(-1, 1)
+        ratio = pi_now/pi_old
 
-            # Critic loss
-            with torch.no_grad():
-                next_value = self.critic_target(ns, npf)
-                target = reward + self.discount_factor * next_value * (1-done)
-                target = eps_clip_critic * ratio.detach() * target
+        # Critic loss
+        with torch.no_grad():
+            next_value = self.critic_target(ns, npf)
+            target = reward + self.discount_factor * next_value * (1-done)
+            target = eps_clip_critic * ratio.detach() * target
 
-            value = self.critic(s, pf)
-            critic_loss = self.huber(value, target)
+        value = self.critic(s, pf)
+        critic_loss = self.huber(value, target)
 
-            # Actor loss
-            td_advantage = r + self.discount_factor * self.critic(ns, npf) * (1-done) - value
-            td_advantage = td_advantage.detach()
-            surr1 = ratio * td_advantage
-            surr2 = torch.clamp(ratio, 1-eps_clip, 1+eps_clip) * td_advantage
-            actor_loss = -torch.min(surr1, surr2).mean()
+        # Actor loss
+        td_advantage = r + self.discount_factor * self.critic(ns, npf) * (1-done) - value
+        td_advantage = td_advantage.detach()
+        surr1 = ratio * td_advantage
+        surr2 = torch.clamp(ratio, 1-eps_clip, 1+eps_clip) * td_advantage
+        actor_loss = -torch.min(surr1, surr2).mean()
 
-            # Update
-            self.loss = actor_loss + critic_loss
-            self.optimizer.zero_grad()
-            self.loss.backward()
-            self.optimizer.step()
+        # Update
+        self.loss = actor_loss + critic_loss
+        self.optimizer.zero_grad()
+        self.loss.backward()
+        self.optimizer.step()
 
     def soft_target_update(self, params, target_params):
         for param, target_param in zip(params, target_params):
