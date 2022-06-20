@@ -1,5 +1,6 @@
 import torch
 import torch.nn as nn
+import numpy as np
 from Distribution import Dirichlet
 from itertools import product
 
