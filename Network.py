@@ -1,6 +1,7 @@
 import torch
 import torch.nn as nn
 from Distribution import Dirichlet
+from itertools import product
 
 device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 
@@ -75,10 +76,23 @@ class Actor(nn.Module):
         mode = (alpha - vector_1) / (total - vector_N)
         mean = dirichlet.mean
 
+        grid_seed = list(product(range(1, 11), repeat=K))
+        grid_seed = torch.tensor(grid_seed).float().view(-1, K)
+        cash_bias = torch.ones(size=(grid_seed.shape[0], 1)) * 4.5
+        grid_seed = torch.cat([cash_bias, grid_seed], dim=-1)
+        grid = torch.softmax(grid_seed, dim=-1)
+
+        y = dirichlet.log_prob(grid)
+        y = y.detach()
+
+        pseudo_mode = grid[torch.argmax(y)]
+
         if repre == "mean":
             sampled_p = mean
         elif repre == "mode":
             sampled_p = mode
+        elif repre == "pseudo":
+            sampled_p = pseudo_mode
         elif repre is False:
             sampled_p = dirichlet.sample([1])[0]
 
@@ -127,3 +141,49 @@ class Header(nn.Module):
         x = self.layer3(x)
         x = self.out_act(x)
         return x
+
+
+
+if __name__ == "__main__":
+    import numpy as np
+    import seaborn as sns
+    import scipy as sp
+    import matplotlib.pyplot as plt
+
+    from scipy import optimize
+    from scipy.stats import dirichlet
+    from itertools import product
+
+    K = 2
+    s1_tensor = torch.rand(size=(1, K, 5))
+    portfolio = torch.rand(size=(1, K+1, 1))
+
+    score_net = Score()
+    actor = Actor(score_net)
+    critic = Critic(score_net, K)
+
+    batch_num = s1_tensor.shape[0]
+    cash_alpha = torch.ones(size=(batch_num, 1), device=device) * 1.0
+    alpha = torch.cat([cash_alpha, actor(s1_tensor, portfolio)], dim=-1).detach().view(-1)
+
+    D = Dirichlet(alpha)
+    sample = D.sample([1])
+    prob = D.log_prob(sample)
+
+
+    # def function(x):
+    #     x = torch.tensor(x).float()
+    #     y = D.log_prob(x)
+    #     y = -y.detach()
+    #     return y
+    #
+    #
+    # init_point = np.ones(K+1)/(K+1)
+    #
+    # interval = [(0., 1.) for i in range(K+1)]
+    # c_ = [{"type":"eq", "fun": lambda x: np.sum(x)-1.}]
+    #
+    # optimum = optimize.minimize(function, init_point, method="SLSQP", bounds=interval, constraints=c_, options={"ftol":1e-5, "maxiter": 3000})
+    # print(optimum)
+
+
