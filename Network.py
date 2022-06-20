@@ -82,7 +82,7 @@ class Actor(nn.Module):
         grid_seed = torch.cat([cash_bias, grid_seed], dim=-1)
         grid = torch.softmax(grid_seed, dim=-1)
 
-        y = dirichlet.log_prob(grid)
+        y = dirichlet.log_prob(grid).to(device)
         y = y.detach()
 
         pseudo_mode = grid[torch.argmax(y)]
