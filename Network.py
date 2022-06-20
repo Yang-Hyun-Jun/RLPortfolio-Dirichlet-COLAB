@@ -87,8 +87,6 @@ class Actor(nn.Module):
         y = y.detach()
 
         pseudo_mode = grid[torch.argmax(y)]
-        np.set_printoptions(precision=4, suppress=True)
-        print(pseudo_mode)
 
         if repre == "mean":
             sampled_p = mean
