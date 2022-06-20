@@ -65,6 +65,7 @@ class Actor(nn.Module):
         alpha = torch.cat([cash_alpha, self(s1_tensor, portfolio)], dim=-1)
         dirichlet = Dirichlet(alpha)
 
+        print("batch_num", batch_num)
         #Dirichlet 분포 mode 계산
         B = alpha.shape[0] #Batch num
         N = alpha.shape[1] #Asset num
@@ -78,7 +79,7 @@ class Actor(nn.Module):
 
         grid_seed = list(product(range(1, 11), repeat=N))
         grid_seed = torch.tensor(grid_seed).float().view(-1, N)
-        cash_bias = torch.ones(size=(grid_seed.shape[0], 1)) * 5.0
+        cash_bias = torch.ones(size=(batch_num, 1)) * 5.0
         grid_seed = torch.cat([cash_bias, grid_seed], dim=-1)
         grid = torch.softmax(grid_seed, dim=-1)
 
@@ -86,8 +87,6 @@ class Actor(nn.Module):
         y = y.detach()
 
         pseudo_mode = grid[torch.argmax(y)]
-        print("p", pseudo_mode.shape)
-        print("m", mean.shape)
 
         if repre == "mean":
             sampled_p = mean
