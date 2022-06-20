@@ -77,8 +77,8 @@ class Actor(nn.Module):
         mean = dirichlet.mean
 
         grid_seed = list(product(range(1, 11), repeat=N))
-        grid_seed = torch.tensor(grid_seed, device=device).float().view(-1, N)
-        cash_bias = torch.ones(size=(grid_seed.shape[0], 1), device=device) * 4.5
+        grid_seed = torch.tensor(grid_seed).float().view(-1, N)
+        cash_bias = torch.ones(size=(grid_seed.shape[0], 1)) * 5.0
         grid_seed = torch.cat([cash_bias, grid_seed], dim=-1)
         grid = torch.softmax(grid_seed, dim=-1)
 
@@ -86,6 +86,8 @@ class Actor(nn.Module):
         y = y.detach()
 
         pseudo_mode = grid[torch.argmax(y)]
+        print("p", pseudo_mode.shape)
+        print("m", mean.shape)
 
         if repre == "mean":
             sampled_p = mean
@@ -165,12 +167,21 @@ if __name__ == "__main__":
     batch_num = s1_tensor.shape[0]
     cash_alpha = torch.ones(size=(batch_num, 1), device=device) * 1.0
     alpha = torch.cat([cash_alpha, actor(s1_tensor, portfolio)], dim=-1).detach().view(-1)
-
     D = Dirichlet(alpha)
-    sample = D.sample([1])
-    prob = D.log_prob(sample)
 
 
+    grid_seed = list(product(range(1, 11), repeat=K))
+    grid_seed = torch.tensor(grid_seed).float().view(-1, K)
+    cash_bias = torch.ones(size=(grid_seed.shape[0], 1)) * 5.0
+    grid_seed = torch.cat([cash_bias, grid_seed], dim=-1)
+    grid = torch.softmax(grid_seed, dim=-1)
+
+    y = D.log_prob(grid)
+    y = y.detach()
+    pseudo_mode = grid[torch.argmax(y)]
+
+    print(pseudo_mode)
+    print(D.mean)
     # def function(x):
     #     x = torch.tensor(x).float()
     #     y = D.log_prob(x)
