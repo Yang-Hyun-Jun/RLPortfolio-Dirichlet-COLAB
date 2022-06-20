@@ -78,11 +78,11 @@ class Actor(nn.Module):
 
         grid_seed = list(product(range(1, 11), repeat=N-1))
         grid_seed = torch.tensor(grid_seed).float().view(-1, N-1)
-        cash_bias = torch.ones(size=(grid_seed.shape[0], 1)) * 5.0
+        cash_bias = torch.ones(size=(grid_seed.shape[0], 1), device=device) * 5.0
         grid_seed = torch.cat([cash_bias, grid_seed], dim=-1)
         grid = torch.softmax(grid_seed, dim=-1)
 
-        y = dirichlet.log_prob(grid).to(device)
+        y = dirichlet.log_prob(grid)
         y = y.detach()
 
         pseudo_mode = grid[torch.argmax(y)]
