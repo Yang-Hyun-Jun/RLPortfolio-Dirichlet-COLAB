@@ -76,9 +76,9 @@ class Actor(nn.Module):
         mode = (alpha - vector_1) / (total - vector_N)
         mean = dirichlet.mean
 
-        grid_seed = list(product(range(1, 11), repeat=K))
-        grid_seed = torch.tensor(grid_seed).float().view(-1, K)
-        cash_bias = torch.ones(size=(grid_seed.shape[0], 1)) * 4.5
+        grid_seed = list(product(range(1, 11), repeat=N))
+        grid_seed = torch.tensor(grid_seed, device=device).float().view(-1, N)
+        cash_bias = torch.ones(size=(grid_seed.shape[0], 1), device=device) * 4.5
         grid_seed = torch.cat([cash_bias, grid_seed], dim=-1)
         grid = torch.softmax(grid_seed, dim=-1)
 
