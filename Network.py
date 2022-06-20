@@ -65,10 +65,9 @@ class Actor(nn.Module):
         alpha = torch.cat([cash_alpha, self(s1_tensor, portfolio)], dim=-1)
         dirichlet = Dirichlet(alpha)
 
-        print("batch_num", batch_num)
         #Dirichlet 분포 mode 계산
         B = alpha.shape[0] #Batch num
-        N = alpha.shape[1] #Asset num
+        N = alpha.shape[1] #Asset num + 1
         total = torch.sum(alpha, dim=1).view(B, 1)
         vector_1 = torch.ones(size=alpha.shape, device=device)
         vector_N = torch.ones(size=(B, 1), device=device) * N
@@ -77,12 +76,12 @@ class Actor(nn.Module):
         mode = (alpha - vector_1) / (total - vector_N)
         mean = dirichlet.mean
 
-        grid_seed = list(product(range(1, 11), repeat=N))
-        grid_seed = torch.tensor(grid_seed).float().view(-1, N)
+        grid_seed = list(product(range(1, 11), repeat=N-1))
+        grid_seed = torch.tensor(grid_seed).float().view(-1, N-1)
         cash_bias = torch.ones(size=(grid_seed.shape[0], 1)) * 5.0
         grid_seed = torch.cat([cash_bias, grid_seed], dim=-1)
         grid = torch.softmax(grid_seed, dim=-1)
-        print("grid", grid.shape)
+
         y = dirichlet.log_prob(grid)
         y = y.detach()
 
