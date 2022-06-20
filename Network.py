@@ -82,7 +82,7 @@ class Actor(nn.Module):
         cash_bias = torch.ones(size=(grid_seed.shape[0], 1)) * 5.0
         grid_seed = torch.cat([cash_bias, grid_seed], dim=-1)
         grid = torch.softmax(grid_seed, dim=-1)
-
+        print("grid", grid.shape)
         y = dirichlet.log_prob(grid)
         y = y.detach()
 
@@ -174,6 +174,7 @@ if __name__ == "__main__":
     cash_bias = torch.ones(size=(grid_seed.shape[0], 1)) * 5.0
     grid_seed = torch.cat([cash_bias, grid_seed], dim=-1)
     grid = torch.softmax(grid_seed, dim=-1)
+    print(grid.shape)
 
     y = D.log_prob(grid)
     y = y.detach()
