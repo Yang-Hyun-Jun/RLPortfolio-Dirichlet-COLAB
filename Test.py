@@ -111,7 +111,7 @@ class DIRITester:
                 print(f"num sell:{self.num_sell}")
                 print(f"num hold:{self.num_hold}")
                 df = pd.DataFrame({"alpha":alphas})
-                df.to_csv("/content")
+                df.to_csv("/content/alphas")
                 break
 
 
