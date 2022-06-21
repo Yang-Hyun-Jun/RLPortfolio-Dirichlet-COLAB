@@ -82,7 +82,7 @@ class DIRITester:
 
             #3일 단위로 거래
             if self.holding:
-                if steps_done % 6:
+                if steps_done % 3:
                     action = np.zeros(shape=self.K)
 
             m_action, next_state1, next_portfolio, reward, done = self.agent.step(action, confidence)
