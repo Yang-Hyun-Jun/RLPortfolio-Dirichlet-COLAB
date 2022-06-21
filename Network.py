@@ -147,15 +147,6 @@ class Header(nn.Module):
 
 
 if __name__ == "__main__":
-    import numpy as np
-    import seaborn as sns
-    import scipy as sp
-    import matplotlib.pyplot as plt
-
-    from scipy import optimize
-    from scipy.stats import dirichlet
-    from itertools import product
-
     root = "/Users/mac/Downloads/alphas.npy"
     K = 3
     s1_tensor = torch.rand(size=(1, K, 5))
@@ -167,12 +158,9 @@ if __name__ == "__main__":
 
     batch_num = s1_tensor.shape[0]
     cash_alpha = torch.ones(size=(batch_num, 1), device=device) * 1.0
-    # alpha = torch.cat([cash_alpha, actor(s1_tensor, portfolio)], dim=-1).detach().view(-1)
-    alphas = np.load(root)
-    alphas = alphas.reshape(-1,4)
+    alpha = torch.cat([cash_alpha, actor(s1_tensor, portfolio)], dim=-1).detach().view(-1)
 
-    modes = []
-    D = Dirichlet(torch.tensor(alphas[0]).view(1,-1))
+    D = Dirichlet(torch.tensor(alpha).view(1,-1))
 
     grid_seed = list(product(range(1, 10), repeat=K))
     grid_seed = torch.tensor(grid_seed).float().view(-1, K)
