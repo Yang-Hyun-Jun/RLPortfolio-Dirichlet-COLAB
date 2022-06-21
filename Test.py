@@ -110,8 +110,8 @@ class DIRITester:
                 print(f"num buy:{self.num_buy}")
                 print(f"num sell:{self.num_sell}")
                 print(f"num hold:{self.num_hold}")
-                df = pd.DataFrame({"alpha":alphas})
-                df.to_csv("/content/alphas")
+                arr = np.array(alphas)
+                np.save("/content/alphas", arr)
                 break
 
 
