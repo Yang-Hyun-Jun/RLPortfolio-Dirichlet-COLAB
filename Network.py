@@ -98,7 +98,7 @@ class Actor(nn.Module):
             sampled_p = dirichlet.sample([1])[0]
 
         log_pi = dirichlet.log_prob(sampled_p)
-        return sampled_p, log_pi, alpha
+        return sampled_p, log_pi
 
 
 class Critic(nn.Module):
@@ -155,7 +155,8 @@ if __name__ == "__main__":
     from scipy.stats import dirichlet
     from itertools import product
 
-    K = 2
+    root = "/Users/mac/Downloads/alphas.npy"
+    K = 3
     s1_tensor = torch.rand(size=(1, K, 5))
     portfolio = torch.rand(size=(1, K+1, 1))
 
@@ -165,24 +166,37 @@ if __name__ == "__main__":
 
     batch_num = s1_tensor.shape[0]
     cash_alpha = torch.ones(size=(batch_num, 1), device=device) * 1.0
-    alpha = torch.cat([cash_alpha, actor(s1_tensor, portfolio)], dim=-1).detach().view(-1)
-    D = Dirichlet(alpha)
+    # alpha = torch.cat([cash_alpha, actor(s1_tensor, portfolio)], dim=-1).detach().view(-1)
+    alphas = np.load(root)
+    alphas = alphas.reshape(-1,4)
+
+    modes = []
+    for alpha in alphas:
+        alpha = torch.tensor(alpha).view(-1)
+        D = Dirichlet(alpha)
 
 
-    grid_seed = list(product(range(1, 11), repeat=K))
-    grid_seed = torch.tensor(grid_seed).float().view(-1, K)
-    cash_bias = torch.ones(size=(grid_seed.shape[0], 1)) * 5.0
-    grid_seed = torch.cat([cash_bias, grid_seed], dim=-1)
-    grid = torch.softmax(grid_seed, dim=-1)
-    print(grid.shape)
+        grid_seed = list(product(range(1, 10), repeat=K))
+        grid_seed = torch.tensor(grid_seed).float().view(-1, K)
+        cash_bias = torch.ones(size=(grid_seed.shape[0], 1)) * 5.0
+        grid_seed = torch.cat([cash_bias, grid_seed], dim=-1)
+        grid = torch.softmax(grid_seed, dim=-1)
 
-    y = D.log_prob(grid)
-    y = y.detach()
-    pseudo_mode = grid[torch.argmax(y)]
+        y = D.log_prob(grid)
+        y = y.detach()
+        pseudo_mode = grid[torch.argmax(y)]
+        pseudo_mode = np.array(pseudo_mode)
+        modes.append(pseudo_mode)
 
-    print(y)
-    print(pseudo_mode)
-    print(D.mean)
+
+    # print(torch.argmax(y))
+    # print(y)
+    np.set_printoptions(precision=4, suppress=True)
+    for mode in modes:
+        print(mode)
+
+
+
     # def function(x):
     #     x = torch.tensor(x).float()
     #     y = D.log_prob(x)
