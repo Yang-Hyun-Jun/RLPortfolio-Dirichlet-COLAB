@@ -1,3 +1,5 @@
+import pandas as pd
+
 import Visualizer
 import utils
 import torch
@@ -72,12 +74,14 @@ class DIRITester:
         state1 = self.agent.environment.observe()
         portfolio = self.agent.portfolio
         steps_done = 0
+        alphas = []
 
         while True:
-            action, confidence, log_prob = \
+            action, confidence, log_prob, alpha = \
                 self.agent.get_action(torch.tensor(state1, device=device).float().view(1, self.K, -1),
                                       torch.tensor(portfolio, device=device).float().view(1, self.K + 1, -1), self.repre)
 
+            alphas.append(alpha)
             #3일 단위로 거래
             if self.holding:
                 if steps_done % 3:
@@ -95,7 +99,6 @@ class DIRITester:
             metrics.balances.append(self.agent.balance)
             metrics.cum_fees.append(self.agent.cum_fee)
 
-            print(f"actions:{action}")
             if steps_done % 50 == 0:
                 print(f"balance:{self.agent.balance}")
                 print(f"stocks:{self.agent.num_stocks}")
@@ -107,6 +110,8 @@ class DIRITester:
                 print(f"num buy:{self.num_buy}")
                 print(f"num sell:{self.num_sell}")
                 print(f"num hold:{self.num_hold}")
+                df = pd.DataFrame({"alpha":alphas})
+                df.to_csv("/content")
                 break
 
 
