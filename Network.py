@@ -83,7 +83,7 @@ class Actor(nn.Module):
             sampled_p = mode
         elif repre == "pseudo":
 
-            grid_seed = list(product(range(1, 13), repeat=N - 1))
+            grid_seed = list(product(range(1, 15), repeat=N - 1))
             grid_seed = torch.tensor(grid_seed, device=device).float().view(-1, N - 1)
             cash_bias = torch.ones(size=(grid_seed.shape[0], 1), device=device) * 5.0
             grid_seed = torch.cat([cash_bias, grid_seed], dim=-1)
