@@ -180,6 +180,7 @@ if __name__ == "__main__":
     y = y.detach()
     pseudo_mode = grid[torch.argmax(y)]
 
+    print(y)
     print(pseudo_mode)
     print(D.mean)
     # def function(x):
