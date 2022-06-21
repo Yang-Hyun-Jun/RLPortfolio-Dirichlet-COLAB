@@ -195,8 +195,6 @@ if __name__ == "__main__":
     for mode in modes:
         print(mode)
 
-
-
     # def function(x):
     #     x = torch.tensor(x).float()
     #     y = D.log_prob(x)
