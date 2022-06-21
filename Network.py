@@ -87,6 +87,7 @@ class Actor(nn.Module):
         y = y.detach()
 
         pseudo_mode = grid[torch.argmax(y)]
+        pseudo_mode = pseudo_mode.view(B, -1)
 
         if repre == "mean":
             sampled_p = mean
@@ -171,43 +172,16 @@ if __name__ == "__main__":
     alphas = alphas.reshape(-1,4)
 
     modes = []
-    for alpha in alphas:
-        alpha = torch.tensor(alpha).view(-1)
-        D = Dirichlet(alpha)
+    D = Dirichlet(torch.tensor(alphas[0]).view(1,-1))
 
+    grid_seed = list(product(range(1, 10), repeat=K))
+    grid_seed = torch.tensor(grid_seed).float().view(-1, K)
+    cash_bias = torch.ones(size=(grid_seed.shape[0], 1)) * 5.0
+    grid_seed = torch.cat([cash_bias, grid_seed], dim=-1)
+    grid = torch.softmax(grid_seed, dim=-1)
 
-        grid_seed = list(product(range(1, 10), repeat=K))
-        grid_seed = torch.tensor(grid_seed).float().view(-1, K)
-        cash_bias = torch.ones(size=(grid_seed.shape[0], 1)) * 5.0
-        grid_seed = torch.cat([cash_bias, grid_seed], dim=-1)
-        grid = torch.softmax(grid_seed, dim=-1)
+    y = D.log_prob(grid)
+    y = y.detach()
+    pseudo_mode = grid[torch.argmax(y)]
 
-        y = D.log_prob(grid)
-        y = y.detach()
-        pseudo_mode = grid[torch.argmax(y)]
-        pseudo_mode = np.array(pseudo_mode)
-        modes.append(pseudo_mode)
-
-
-    # print(torch.argmax(y))
-    # print(y)
-    np.set_printoptions(precision=4, suppress=True)
-    for mode in modes:
-        print(mode)
-
-    # def function(x):
-    #     x = torch.tensor(x).float()
-    #     y = D.log_prob(x)
-    #     y = -y.detach()
-    #     return y
-    #
-    #
-    # init_point = np.ones(K+1)/(K+1)
-    #
-    # interval = [(0., 1.) for i in range(K+1)]
-    # c_ = [{"type":"eq", "fun": lambda x: np.sum(x)-1.}]
-    #
-    # optimum = optimize.minimize(function, init_point, method="SLSQP", bounds=interval, constraints=c_, options={"ftol":1e-5, "maxiter": 3000})
-    # print(optimum)
-
-
+    print(pseudo_mode)
