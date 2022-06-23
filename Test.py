@@ -110,7 +110,7 @@ class DIRITester:
                 print(f"num sell:{self.num_sell}")
                 print(f"num hold:{self.num_hold}")
                 num_stocks = np.array(num_stocks)
-                np.save("/content/num_stocks")
+                np.save("/content/num_stocks", num_stocks)
                 break
 
 
