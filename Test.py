@@ -76,9 +76,18 @@ class DIRITester:
         steps_done = 0
         num_stocks = []
         while True:
-            action, confidence, log_prob = \
+            # action, confidence, log_prob = \
+            #     self.agent.get_action(torch.tensor(state1, device=device).float().view(1, self.K, -1),
+            #                           torch.tensor(portfolio, device=device).float().view(1, self.K + 1, -1), self.repre)
+            action1, confidence1, _ = \
                 self.agent.get_action(torch.tensor(state1, device=device).float().view(1, self.K, -1),
-                                      torch.tensor(portfolio, device=device).float().view(1, self.K + 1, -1), self.repre)
+                                      torch.tensor(portfolio, device=device).float().view(1, self.K + 1, -1), "mean")
+            action2, confidence2, _ = \
+                self.agent.get_action(torch.tensor(state1, device=device).float().view(1, self.K, -1),
+                                      torch.tensor(portfolio, device=device).float().view(1, self.K + 1, -1), "mode")
+
+            action = 0.5 * action1 + 0.5 * action2
+            confidence = 0.5 * confidence1 + 0.5 * confidence2
 
             #3일 단위로 거래
             if self.holding:
@@ -98,13 +107,12 @@ class DIRITester:
             metrics.cum_fees.append(self.agent.cum_fee)
 
             num_stocks.append(list(self.agent.num_stocks))
-            print(num_stocks)
-            # if steps_done % 50 == 0:
-                # print(f"balance:{self.agent.balance}")
-                # print(f"stocks:{self.agent.num_stocks}")
-                # print(f"actions:{action}")
-                # print(f"portfolio:{self.agent.portfolio}")
-                # print(f"cum_fee:{self.agent.cum_fee}")
+            if steps_done % 50 == 0:
+                print(f"balance:{self.agent.balance}")
+                print(f"stocks:{self.agent.num_stocks}")
+                print(f"actions:{action}")
+                print(f"portfolio:{self.agent.portfolio}")
+                print(f"cum_fee:{self.agent.cum_fee}")
             if done:
                 print(f"model:{self.agent.profitloss}")
                 print(f"num buy:{self.num_buy}")
