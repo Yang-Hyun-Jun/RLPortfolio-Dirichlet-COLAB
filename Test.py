@@ -97,8 +97,8 @@ class DIRITester:
             metrics.balances.append(self.agent.balance)
             metrics.cum_fees.append(self.agent.cum_fee)
 
-            print(self.agent.num_stocks)
             num_stocks.append(self.agent.num_stocks)
+            print(num_stocks)
             # if steps_done % 50 == 0:
                 # print(f"balance:{self.agent.balance}")
                 # print(f"stocks:{self.agent.num_stocks}")
@@ -111,6 +111,7 @@ class DIRITester:
                 print(f"num sell:{self.num_sell}")
                 print(f"num hold:{self.num_hold}")
                 num_stocks = np.array(num_stocks)
+                print(num_stocks)
                 np.save("/content/num_stocks", num_stocks)
                 break
 
