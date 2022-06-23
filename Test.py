@@ -99,7 +99,7 @@ class DIRITester:
 
             print(self.agent.num_stocks)
             num_stocks.append(self.agent.num_stocks)
-            if steps_done % 50 == 0:
+            # if steps_done % 50 == 0:
                 # print(f"balance:{self.agent.balance}")
                 # print(f"stocks:{self.agent.num_stocks}")
                 # print(f"actions:{action}")
