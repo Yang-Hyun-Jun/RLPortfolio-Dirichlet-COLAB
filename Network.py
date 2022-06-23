@@ -56,7 +56,6 @@ class Actor(nn.Module):
             scores.append(globals()[f"score{j+1}"])
 
         alpha = torch.cat(scores, dim=-1)
-        # alpha = torch.tensor(0.5) * torch.tanh(alpha) + 0.5
         alpha = torch.exp(alpha)
         return alpha
 
@@ -66,28 +65,23 @@ class Actor(nn.Module):
         alpha = torch.cat([cash_alpha, self(s1_tensor, portfolio)], dim=-1)
         dirichlet = Dirichlet(alpha)
 
-        #Dirichlet 분포 mode 계산
-        B = alpha.shape[0] #Batch num
-        N = alpha.shape[1] #Asset num + 1
-        total = torch.sum(alpha, dim=1).view(B, 1)
-        vector_1 = torch.ones(size=alpha.shape, device=device)
-        vector_N = torch.ones(size=(B, 1), device=device) * N
-
         #Representative value
-        mode = (alpha - vector_1) / (total - vector_N)
-        mean = dirichlet.mean
-
         if repre == "mean":
-            sampled_p = mean
+            sampled_p = dirichlet.mean
         elif repre == "mode":
-            sampled_p = mode
-        elif repre == "pseudo":
 
             if (alpha[0] > 1).all():
+                B = alpha.shape[0]  # Batch num
+                N = alpha.shape[1]  # Asset num + 1
+                total = torch.sum(alpha, dim=1).view(B, 1)
+                vector_1 = torch.ones(size=alpha.shape, device=device)
+                vector_N = torch.ones(size=(B, 1), device=device) * N
+                mode = (alpha - vector_1) / (total - vector_N)
                 sampled_p = mode
+
             else:
-                grid_seed = list(product(range(1, 15), repeat=N - 1))
-                grid_seed = torch.tensor(grid_seed, device=device).float().view(-1, N - 1)
+                grid_seed = list(product(range(1, 11), repeat=batch_num - 1))
+                grid_seed = torch.tensor(grid_seed, device=device).float().view(-1, batch_num - 1)
                 cash_bias = torch.ones(size=(grid_seed.shape[0], 1), device=device) * 5.0
                 grid_seed = torch.cat([cash_bias, grid_seed], dim=-1)
                 grid = torch.softmax(grid_seed, dim=-1)
@@ -96,7 +90,7 @@ class Actor(nn.Module):
                 y = y.detach()
 
                 pseudo_mode = grid[torch.argmax(y)]
-                pseudo_mode = pseudo_mode.view(B, -1)
+                pseudo_mode = pseudo_mode.view(batch_num, -1)
                 sampled_p = pseudo_mode
 
         elif repre is False:
