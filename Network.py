@@ -86,12 +86,15 @@ class Actor(nn.Module):
                 cash_bias = torch.ones(size=(grid_seed.shape[0], 1), device=device) * 5.0
                 grid_seed = torch.cat([cash_bias, grid_seed], dim=-1)
                 grid = torch.softmax(grid_seed, dim=-1)
+                print(grid)
 
                 y = dirichlet.log_prob(grid)
+                print(y)
+
                 y = y.detach()
 
                 pseudo_mode = grid[torch.argmax(y)]
-                pseudo_mode = pseudo_mode.view(batch_num, -1)
+                pseudo_mode = pseudo_mode.view(B, -1)
                 sampled_p = pseudo_mode
 
         elif repre is False:
@@ -147,7 +150,7 @@ class Header(nn.Module):
 
 if __name__ == "__main__":
     root = "/Users/mac/Downloads/alphas.npy"
-    K = 7
+    K = 3
     s1_tensor = torch.rand(size=(1, K, 5))
     portfolio = torch.rand(size=(1, K+1, 1))
 
@@ -158,11 +161,11 @@ if __name__ == "__main__":
     batch_num = s1_tensor.shape[0]
     cash_alpha = torch.ones(size=(batch_num, 1), device=device) * 1.0
     # alpha = torch.cat([cash_alpha, actor(s1_tensor, portfolio)], dim=-1).detach().view(1,-1)
-    alpha = torch.tensor([1.4, 1.1, 1.13, 1.06, 1.02, 1.04, 1.05, 1.09]).float().view(1, -1)
+    alpha = torch.tensor([1.4, 1.1, 1.13, 1.06]).float().view(1, -1)
 
     D = Dirichlet(alpha)
 
-    grid_seed = list(product(range(1, 12), repeat=K))
+    grid_seed = list(product(range(1, 11), repeat=K))
     grid_seed = torch.tensor(grid_seed).float().view(-1, K)
     cash_bias = torch.ones(size=(grid_seed.shape[0], 1)) * 5.0
     grid_seed = torch.cat([cash_bias, grid_seed], dim=-1)
@@ -172,15 +175,6 @@ if __name__ == "__main__":
     y = y.detach()
     pseudo_mode = grid[torch.argmax(y)]
 
-    B = alpha.shape[0]  # Batch num
-    N = alpha.shape[1]  # Asset num + 1
-    total = torch.sum(alpha, dim=1).view(B, 1)
-    vector_1 = torch.ones(size=alpha.shape, device=device)
-    vector_N = torch.ones(size=(B, 1), device=device) * N
-
-    # Representative value
-    mode = (alpha - vector_1) / (total - vector_N)
-
+    print(grid_seed.shape)
     print(pseudo_mode)
-    print(mode)
-    print(pseudo_mode-mode)
+    print(pseudo_mode.sum())
