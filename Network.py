@@ -73,28 +73,25 @@ class Actor(nn.Module):
             B = alpha.shape[0]  # Batch num
             N = alpha.shape[1]  # Asset num + 1
 
-            if (alpha[0] > 1).all():
-                total = torch.sum(alpha, dim=1).view(B, 1)
-                vector_1 = torch.ones(size=alpha.shape, device=device)
-                vector_N = torch.ones(size=(B, 1), device=device) * N
-                mode = (alpha - vector_1) / (total - vector_N)
-                sampled_p = mode
+            # if (alpha[0] > 1).all():
+            #     total = torch.sum(alpha, dim=1).view(B, 1)
+            #     vector_1 = torch.ones(size=alpha.shape, device=device)
+            #     vector_N = torch.ones(size=(B, 1), device=device) * N
+            #     mode = (alpha - vector_1) / (total - vector_N)
+            #     sampled_p = mode
 
-            else:
+            if True:
                 grid_seed = list(product(range(1, 11), repeat=N-1))
                 grid_seed = torch.tensor(grid_seed, device=device).float().view(-1, N-1)
                 cash_bias = torch.ones(size=(grid_seed.shape[0], 1), device=device) * 5.0
                 grid_seed = torch.cat([cash_bias, grid_seed], dim=-1)
                 grid = torch.softmax(grid_seed, dim=-1)
-                print("grid",grid)
 
                 y = dirichlet.log_prob(grid)
                 y = y.detach()
-                print("y", y)
 
                 pseudo_mode = grid[torch.argmax(y)]
                 pseudo_mode = pseudo_mode.view(B, -1)
-                print("mode", pseudo_mode)
                 sampled_p = pseudo_mode
 
         elif repre is False:
