@@ -86,21 +86,22 @@ class Actor(nn.Module):
                 cash_bias = torch.ones(size=(grid_seed.shape[0], 1), device=device) * 5.0
                 grid_seed = torch.cat([cash_bias, grid_seed], dim=-1)
                 grid = torch.softmax(grid_seed, dim=-1)
-                print(grid)
+                print("grid",grid)
 
                 y = dirichlet.log_prob(grid)
-                print(y)
-
                 y = y.detach()
+                print("y", y)
 
                 pseudo_mode = grid[torch.argmax(y)]
                 pseudo_mode = pseudo_mode.view(B, -1)
+                print("mode", pseudo_mode)
                 sampled_p = pseudo_mode
 
         elif repre is False:
             sampled_p = dirichlet.sample([1])[0]
 
         log_pi = dirichlet.log_prob(sampled_p)
+        print("log_pi", log_pi)
         return sampled_p, log_pi
 
 
