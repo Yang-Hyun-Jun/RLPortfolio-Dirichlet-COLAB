@@ -74,7 +74,7 @@ class DIRITester:
         state1 = self.agent.environment.observe()
         portfolio = self.agent.portfolio
         steps_done = 0
-        num_stocks = []
+        num_stocks = np.array([])
         while True:
             action, confidence, log_prob = \
                 self.agent.get_action(torch.tensor(state1, device=device).float().view(1, self.K, -1),
@@ -110,8 +110,6 @@ class DIRITester:
                 print(f"num buy:{self.num_buy}")
                 print(f"num sell:{self.num_sell}")
                 print(f"num hold:{self.num_hold}")
-                num_stocks = np.array(num_stocks)
-                print(num_stocks)
                 np.save("/content/num_stocks", num_stocks)
                 break
 
