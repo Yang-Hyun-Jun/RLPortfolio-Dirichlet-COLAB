@@ -70,9 +70,12 @@ class Actor(nn.Module):
             sampled_p = dirichlet.mean
         elif repre == "mode":
 
+            B = alpha.shape[0]  # Batch num
+            N = alpha.shape[1]  # Asset num + 1
+
+            print(alpha[0])
+            print((alpha[0]>1).all())
             if (alpha[0] > 1).all():
-                B = alpha.shape[0]  # Batch num
-                N = alpha.shape[1]  # Asset num + 1
                 total = torch.sum(alpha, dim=1).view(B, 1)
                 vector_1 = torch.ones(size=alpha.shape, device=device)
                 vector_N = torch.ones(size=(B, 1), device=device) * N
@@ -80,8 +83,8 @@ class Actor(nn.Module):
                 sampled_p = mode
 
             else:
-                grid_seed = list(product(range(1, 11), repeat=batch_num - 1))
-                grid_seed = torch.tensor(grid_seed, device=device).float().view(-1, batch_num - 1)
+                grid_seed = list(product(range(1, 11), repeat=B-1))
+                grid_seed = torch.tensor(grid_seed, device=device).float().view(-1, B-1)
                 cash_bias = torch.ones(size=(grid_seed.shape[0], 1), device=device) * 5.0
                 grid_seed = torch.cat([cash_bias, grid_seed], dim=-1)
                 grid = torch.softmax(grid_seed, dim=-1)
