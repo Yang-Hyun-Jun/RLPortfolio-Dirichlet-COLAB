@@ -76,18 +76,9 @@ class DIRITester:
         steps_done = 0
         num_stocks = []
         while True:
-            # action, confidence, log_prob = \
-            #     self.agent.get_action(torch.tensor(state1, device=device).float().view(1, self.K, -1),
-            #                           torch.tensor(portfolio, device=device).float().view(1, self.K + 1, -1), self.repre)
-            action1, confidence1, _ = \
+            action, confidence, log_prob = \
                 self.agent.get_action(torch.tensor(state1, device=device).float().view(1, self.K, -1),
-                                      torch.tensor(portfolio, device=device).float().view(1, self.K + 1, -1), "mean")
-            action2, confidence2, _ = \
-                self.agent.get_action(torch.tensor(state1, device=device).float().view(1, self.K, -1),
-                                      torch.tensor(portfolio, device=device).float().view(1, self.K + 1, -1), "mode")
-
-            action = 0.9 * action1 + 0.1 * action2
-            confidence = 0.9 * confidence1 + 0.1 * confidence2
+                                      torch.tensor(portfolio, device=device).float().view(1, self.K + 1, -1), self.repre)
 
             #3일 단위로 거래
             if self.holding:
