@@ -74,11 +74,25 @@ class DIRITester:
         state1 = self.agent.environment.observe()
         portfolio = self.agent.portfolio
         steps_done = 0
-        dp = []
         while True:
-            action, confidence, log_prob, sample_p = \
+            action, confidence, log_prob = \
                 self.agent.get_action(torch.tensor(state1, device=device).float().view(1, self.K, -1),
                                       torch.tensor(portfolio, device=device).float().view(1, self.K + 1, -1), self.repre)
+
+            action1, confidence, log_prob = \
+                self.agent.get_action(torch.tensor(state1, device=device).float().view(1, self.K, -1),
+                                      torch.tensor(portfolio, device=device).float().view(1, self.K + 1, -1), "mean")
+
+            action2, confidence, log_prob = \
+                self.agent.get_action(torch.tensor(state1, device=device).float().view(1, self.K, -1),
+                                      torch.tensor(portfolio, device=device).float().view(1, self.K + 1, -1), "mode")
+
+            rand = np.random.choice([0, 1], size=1, replace=True, p=[0.5, 0.5])
+
+            if rand[0] == 0:
+                action = action1
+            elif rand[0] == 1:
+                action = action2
 
             #3일 단위로 거래
             if self.holding:
@@ -96,7 +110,6 @@ class DIRITester:
             metrics.profitlosses.append(self.agent.profitloss)
             metrics.balances.append(self.agent.balance)
             metrics.cum_fees.append(self.agent.cum_fee)
-            dp.append(list(sample_p[0]))
             if steps_done % 50 == 0:
                 print(f"balance:{self.agent.balance}")
                 print(f"stocks:{self.agent.num_stocks}")
@@ -108,7 +121,6 @@ class DIRITester:
                 print(f"num buy:{self.num_buy}")
                 print(f"num sell:{self.num_sell}")
                 print(f"num hold:{self.num_hold}")
-                np.save("/content/dp", dp)
                 break
 
 
