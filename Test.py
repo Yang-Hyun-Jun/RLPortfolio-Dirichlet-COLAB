@@ -87,8 +87,8 @@ class DIRITester:
                 self.agent.get_action(torch.tensor(state1, device=device).float().view(1, self.K, -1),
                                       torch.tensor(portfolio, device=device).float().view(1, self.K + 1, -1), "mode")
 
-            action = 0.98 * action1 + 0.02 * action2
-            confidence = 0.98 * confidence1 + 0.02 * confidence2
+            action = 0.95 * action1 + 0.05 * action2
+            confidence = 0.95 * confidence1 + 0.05 * confidence2
 
             #3일 단위로 거래
             if self.holding:
