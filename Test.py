@@ -87,7 +87,7 @@ class DIRITester:
                                       torch.tensor(portfolio, device=device).float().view(1, self.K + 1, -1), "mode")
 
 
-            sample_p = sample_p1 * 0.8 + sample_p2 + 0.2
+            sample_p = sample_p1 * 0.8 + sample_p2 * 0.2
             action = (sample_p[0]-self.agent.portfolio)[1:]
             confidence = abs(action)
 
