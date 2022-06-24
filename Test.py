@@ -87,12 +87,8 @@ class DIRITester:
                 self.agent.get_action(torch.tensor(state1, device=device).float().view(1, self.K, -1),
                                       torch.tensor(portfolio, device=device).float().view(1, self.K + 1, -1), "mode")
 
-            rand = np.random.choice([0, 1], size=1, replace=True, p=[0.5, 0.5])
-
-            if rand[0] == 0:
-                action = action1
-            elif rand[0] == 1:
-                action = action2
+            action = 0.98 * action1 + 0.02 * action2
+            confidence = 0.98 * action1 + 0.02 * action2
 
             #3일 단위로 거래
             if self.holding:
