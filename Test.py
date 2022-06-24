@@ -88,7 +88,7 @@ class DIRITester:
 
 
             sample_p = sample_p1 * 0.8 + sample_p2 + 0.2
-            action = (sample_p[0]-self.portfolio)[1:]
+            action = (sample_p[0]-self.agent.portfolio)[1:]
             confidence = abs(action)
 
             #3일 단위로 거래
