@@ -75,18 +75,23 @@ class DIRITester:
         portfolio = self.agent.portfolio
         steps_done = 0
         while True:
-            action, confidence, log_prob = \
+            action, confidence, log_prob, _ = \
                 self.agent.get_action(torch.tensor(state1, device=device).float().view(1, self.K, -1),
                                       torch.tensor(portfolio, device=device).float().view(1, self.K + 1, -1), self.repre)
 
-            action1, confidence1, log_prob = \
+            action1, confidence1, log_prob, sample_p1 = \
                 self.agent.get_action(torch.tensor(state1, device=device).float().view(1, self.K, -1),
                                       torch.tensor(portfolio, device=device).float().view(1, self.K + 1, -1), "mean")
-            action2, confidence2, log_prob = \
+            action2, confidence2, log_prob, sample_p2 = \
                 self.agent.get_action(torch.tensor(state1, device=device).float().view(1, self.K, -1),
                                       torch.tensor(portfolio, device=device).float().view(1, self.K + 1, -1), "mode")
 
-            action = (action1 * action2) / np.sum(action1 * action2)
+
+            sample_p1 = sample_p1.cpu().numpy()
+            sample_p2 = sample_p2.cpu().numpy()
+
+            sample_p = sample_p1 * 0.8 + sample_p2 + 0.2
+            action = (sample_p[0]-self.portfolio)[1:]
             confidence = abs(action)
 
             #3일 단위로 거래
