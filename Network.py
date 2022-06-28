@@ -102,7 +102,7 @@ class Actor(nn.Module):
             min_ind = np.argmin(vars)
             max_por = samples[max_ind]
             min_por = samples[min_ind]
-            sampled_p = max_por
+            sampled_p = max_por.cpu()
 
         elif repre is False:
             sampled_p = dirichlet.sample([1])[0]
