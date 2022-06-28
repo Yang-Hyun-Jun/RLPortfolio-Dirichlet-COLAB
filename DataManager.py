@@ -1,5 +1,6 @@
 import pandas as pd
 import numpy as np
+import utils
 
 from collections import defaultdict
 
@@ -92,3 +93,49 @@ def get_scaling(data):
         feature_std = feature_data.std()
         data.loc[:, name] = (data.loc[:, name] - feature_mean) / feature_std
     return data
+
+
+def get_covariance():
+    path_list = utils.dataset6
+    return_data = defaultdict(float)
+    names = [path.split("/")[-1] for path in path_list]
+
+    for i, path in enumerate(path_list):
+        data = pd.read_csv(path, thousands=",", converters={"Date": lambda x: str(x)})
+        data = data.replace(0, np.nan)
+        data = data.fillna(method="bfill")
+
+        data = data[data["Date"] <= "2021-12-31"]
+        data = data.set_index("Date", drop=True)
+
+        data = data.astype("float32")
+        prices = data["Close"].values
+        returns = [0] * len(prices)
+
+        for k in range(len(prices)):
+            if k == 0:
+                returns[k] = 0.
+            else:
+                returns[k] = (prices[k] - prices[k - 1]) / prices[k - 1]
+
+        return_data[names[i]] = returns
+
+    len_list = [len(data) for data in return_data.values()]
+    min_len = min(len_list)
+
+    for name in names:
+        return_data[name] = return_data[name][:min_len]
+
+    return_data = pd.DataFrame(return_data)
+    cov = return_data.cov()
+    return cov
+
+
+def VaR(stock_list, weight):
+    cov = pd.read_csv(utils.DATA_DIR + "/COV", index_col=0)
+    cov = cov.loc[stock_list, stock_list]
+    weight = np.array(weight)
+    variance = weight.T.dot(cov).dot(weight)
+    deviation = np.sqrt(variance)
+    VaR = 1.65 * 15000000 * deviation
+    return VaR

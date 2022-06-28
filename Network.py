@@ -1,8 +1,11 @@
 import torch
 import torch.nn as nn
 import numpy as np
+
+import utils
 from Distribution import Dirichlet
 from itertools import product
+from DataManager import VaR
 
 device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 
@@ -65,40 +68,52 @@ class Actor(nn.Module):
         alpha = torch.cat([cash_alpha, self(s1_tensor, portfolio)], dim=-1)
         dirichlet = Dirichlet(alpha)
 
+        B = alpha.shape[0]  # Batch num
+        N = alpha.shape[1]  # Asset num + 1
+
         #Representative value
         if repre == "mean":
             sampled_p = dirichlet.mean
+
         elif repre == "mode":
+            grid_seed = list(product(range(1, 10), repeat=N-1))
+            grid_seed = torch.tensor(grid_seed, device=device).float().view(-1, N-1)
+            cash_bias = torch.ones(size=(grid_seed.shape[0], 1), device=device) * 5.0
+            grid_seed = torch.cat([cash_bias, grid_seed], dim=-1)
+            grid = torch.softmax(grid_seed, dim=-1)
 
-            B = alpha.shape[0]  # Batch num
-            N = alpha.shape[1]  # Asset num + 1
+            y = dirichlet.log_prob(grid)
+            y = y.detach()
 
-            # if (alpha[0] > 1).all():
-            #     total = torch.sum(alpha, dim=1).view(B, 1)
-            #     vector_1 = torch.ones(size=alpha.shape, device=device)
-            #     vector_N = torch.ones(size=(B, 1), device=device) * N
-            #     mode = (alpha - vector_1) / (total - vector_N)
-            #     sampled_p = mode
+            pseudo_mode = grid[torch.argmax(y)]
+            pseudo_mode = pseudo_mode.view(B, -1)
+            sampled_p = pseudo_mode
 
-            if True:
-                grid_seed = list(product(range(1, 10), repeat=N-1))
-                grid_seed = torch.tensor(grid_seed, device=device).float().view(-1, N-1)
-                cash_bias = torch.ones(size=(grid_seed.shape[0], 1), device=device) * 5.0
-                grid_seed = torch.cat([cash_bias, grid_seed], dim=-1)
-                grid = torch.softmax(grid_seed, dim=-1)
+        elif repre == "max_var":
+            samples = dirichlet.sample(sample_shape=[3000]).view(-1, N)
+            vars = []
 
-                y = dirichlet.log_prob(grid)
-                y = y.detach()
+            for sample in samples:
+                weight = sample[1:]
+                var = VaR(utils.STOCK_LIST, weight)
+                vars.append(var)
 
-                pseudo_mode = grid[torch.argmax(y)]
-                pseudo_mode = pseudo_mode.view(B, -1)
-                sampled_p = pseudo_mode
+            max_ind = np.argmax(vars)
+            min_ind = np.argmin(vars)
+            max_por = samples[max_ind]
+            min_por = samples[min_ind]
+
+            if repre == "max_var":
+                sampled_p = max_por
+            elif repre == "min_var":
+                sampled_p = min_por
 
         elif repre is False:
             sampled_p = dirichlet.sample([1])[0]
 
         log_pi = dirichlet.log_prob(sampled_p)
         return sampled_p, log_pi
+
 
 
 class Critic(nn.Module):
@@ -157,21 +172,21 @@ if __name__ == "__main__":
 
     batch_num = s1_tensor.shape[0]
     cash_alpha = torch.ones(size=(batch_num, 1), device=device) * 1.0
-    # alpha = torch.cat([cash_alpha, actor(s1_tensor, portfolio)], dim=-1).detach().view(1,-1)
-    alpha = torch.tensor([1.4, 1.1, 1.13, 1.06]).float().view(1, -1)
+    alpha = torch.cat([cash_alpha, actor(s1_tensor, portfolio)], dim=-1).detach().view(1,-1)
 
     D = Dirichlet(alpha)
+    samples = D.sample(sample_shape=[1000]).view(-1, K+1)
+    vars = []
 
-    grid_seed = list(product(range(1, 11), repeat=K))
-    grid_seed = torch.tensor(grid_seed).float().view(-1, K)
-    cash_bias = torch.ones(size=(grid_seed.shape[0], 1)) * 5.0
-    grid_seed = torch.cat([cash_bias, grid_seed], dim=-1)
-    grid = torch.softmax(grid_seed, dim=-1)
+    for sample in samples:
+        weight = sample[1:]
+        var = VaR(1, weight)
+        vars.append(var)
 
-    y = D.log_prob(grid)
-    y = y.detach()
-    pseudo_mode = grid[torch.argmax(y)]
+    max_ind = np.argmax(vars)
+    min_ind = np.argmin(vars)
+    max_por = samples[max_ind]
+    min_por = samples[min_ind]
 
-    print(grid_seed.shape)
-    print(pseudo_mode)
-    print(pseudo_mode.sum())
+    print(max_por, min_por)
+
