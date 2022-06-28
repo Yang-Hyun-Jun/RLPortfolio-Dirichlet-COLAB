@@ -4,6 +4,8 @@ Base_DIR = "/Users/mac/Desktop/OHLCV_data/ALL_OHLCV"
 SAVE_DIR = "/content"
 DATA_DIR = "/content/RLPortfolio-Dirichlet-COLAB/Data"
 STOCK_LIST = None
+NOW_PORT = None
+NOW_PRICE = None
 
 a = "/content/RLPortfolio-Dirichlet-COLAB/Data/HA"
 b = "/content/RLPortfolio-Dirichlet-COLAB/Data/WBA"
