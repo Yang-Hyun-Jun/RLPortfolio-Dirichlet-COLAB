@@ -106,7 +106,7 @@ class Actor(nn.Module):
 
             min_ind = np.argmin(fee_)
             min_por = samples[min_ind]
-            sampled_p = min_por
+            sampled_p = torch.tensor(min_por)
 
         elif repre is False:
             sampled_p = dirichlet.sample([1])[0]
