@@ -91,13 +91,13 @@ class Actor(nn.Module):
 
         elif repre == "var":
             samples = dirichlet.sample(sample_shape=[30]).view(-1, N)
-            vars = [VaR(utils.STOCK_LIST, sample[1:].cpu()) for sample in samples]
+            vars = [VaR(utils.STOCK_LIST, torch.softmax(sample[1:], dim=-1).cpu()) for sample in samples]
 
             max_ind = np.argmax(vars)
             min_ind = np.argmin(vars)
             max_por = samples[max_ind]
             min_por = samples[min_ind]
-            sampled_p = min_por
+            sampled_p = max_por
 
         elif repre is False:
             sampled_p = dirichlet.sample([1])[0]
@@ -166,18 +166,6 @@ if __name__ == "__main__":
     alpha = torch.cat([cash_alpha, actor(s1_tensor, portfolio)], dim=-1).detach().view(1,-1)
 
     D = Dirichlet(alpha)
-    samples = D.sample(sample_shape=[1000]).view(-1, K+1)
-    vars = []
+    samples = D.sample(sample_shape=[1000]).view(-1, K+1)[0]
 
-    for sample in samples:
-        weight = sample[1:]
-        var = VaR(1, weight)
-        vars.append(var)
-
-    max_ind = np.argmax(vars)
-    min_ind = np.argmin(vars)
-    max_por = samples[max_ind]
-    min_por = samples[min_ind]
-
-    print(max_por, min_por)
 
