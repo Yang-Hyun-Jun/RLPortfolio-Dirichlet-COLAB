@@ -21,6 +21,3 @@ dataset4 = [a, b, c, d]
 dataset5 = [a, b, c, d, e]
 dataset6 = [a, b, c, f, g, d, e]
 dataset7 = [f, g, d, e]
-
-COV = DataManager.get_covariance()
-
