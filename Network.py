@@ -90,7 +90,7 @@ class Actor(nn.Module):
             sampled_p = pseudo_mode
 
         elif repre == "var":
-            samples = dirichlet.sample(sample_shape=[3000]).view(-1, N)
+            samples = dirichlet.sample(sample_shape=[50]).view(-1, N)
             vars = []
 
             for sample in samples:
