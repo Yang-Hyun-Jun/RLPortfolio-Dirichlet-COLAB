@@ -94,7 +94,7 @@ class Actor(nn.Module):
             vars = []
 
             for sample in samples:
-                weight = sample[1:]
+                weight = sample[1:].cpu()
                 var = VaR(utils.STOCK_LIST, weight)
                 vars.append(var)
 
@@ -102,7 +102,7 @@ class Actor(nn.Module):
             min_ind = np.argmin(vars)
             max_por = samples[max_ind]
             min_por = samples[min_ind]
-            sampled_p = max_por.cpu()
+            sampled_p = max_por
 
         elif repre is False:
             sampled_p = dirichlet.sample([1])[0]
