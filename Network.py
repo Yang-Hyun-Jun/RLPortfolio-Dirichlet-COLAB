@@ -90,14 +90,14 @@ class Actor(nn.Module):
             sampled_p = pseudo_mode
 
         elif repre == "var":
-            samples = dirichlet.sample(sample_shape=[50]).view(-1, N)
+            samples = dirichlet.sample(sample_shape=[30]).view(-1, N)
             vars = [VaR(utils.STOCK_LIST, sample[1:].cpu()) for sample in samples]
 
             max_ind = np.argmax(vars)
             min_ind = np.argmin(vars)
             max_por = samples[max_ind]
             min_por = samples[min_ind]
-            sampled_p = max_por
+            sampled_p = min_por
 
         elif repre is False:
             sampled_p = dirichlet.sample([1])[0]
