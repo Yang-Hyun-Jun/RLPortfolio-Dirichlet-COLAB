@@ -101,13 +101,14 @@ class Actor(nn.Module):
 
         elif repre == "cost":
             now_port = utils.NOW_PORT
-            samples = dirichlet.sample(sample_shape=[30]).view(-1, N).cpu().numpy()
+            samples = dirichlet.sample(sample_shape=[500]).view(-1, N).cpu().numpy()
             fees = [utils.check_fee((now_port - sample)[1:]) for sample in samples]
             fee_mean = utils.check_fee((now_port - dirichlet.mean.cpu().numpy())[1:])
             fees.append(fee_mean)
 
             min_ind = np.argmin(fees)
-            min_por = samples[min_ind] if min_ind < 30 else dirichlet.mean.cpu().numpy()
+            min_por = samples[min_ind]
+            # min_por = samples[min_ind] if min_ind < 30 else dirichlet.mean.cpu().numpy()
             sampled_p = torch.tensor(min_por).to(device)
 
         elif repre is False:
