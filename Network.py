@@ -107,7 +107,7 @@ class Actor(nn.Module):
             fees.append(fee_mean)
 
             min_ind = np.argmin(fees)
-            min_por = samples[min_ind] if min_ind < 30 else dirichlet.mean().cpu().numpy()
+            min_por = samples[min_ind] if min_ind < 30 else dirichlet.mean.cpu().numpy()
             sampled_p = torch.tensor(min_por).to(device)
 
         elif repre is False:
