@@ -152,7 +152,7 @@ class Actor(nn.Module):
             sampled_p = torch.tensor(max_por).to(device)
 
         elif repre == "cosmix":
-            samples = dirichlet.sample(sample_shape=[10000]).view(-1, N).cpu().numpy()
+            samples = dirichlet.sample(sample_shape=[10000]).view(-1, N).cpu()
             mean = dirichlet.mean[0].cpu().numpy()
             sims = [dot(mean, sample)/(norm(mean) * norm(sample)) for sample in samples]
             sims_ = sims.copy()
