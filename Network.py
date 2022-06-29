@@ -1,8 +1,8 @@
 import torch
 import torch.nn as nn
 import numpy as np
-
 import utils
+
 from Distribution import Dirichlet
 from itertools import product
 from DataManager import VaR
@@ -10,7 +10,7 @@ from DataManager import expected
 
 device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 
-a = [0, 0, 0, 0, 0]
+
 class Score(nn.Module):
     def __init__(self, state1_dim=5, state2_dim=2, output_dim=1):
         super().__init__()
@@ -125,14 +125,18 @@ class Actor(nn.Module):
             fees.append(fee_mean)
 
             min_ind = np.argmin(fees)
-
-            if 0 in a:
-                min_ind = 10000
-                a.pop()
-
             # min_por = samples[min_ind]
             min_por = samples[min_ind] if min_ind < 10000 else dirichlet.mean.cpu().numpy()
             sampled_p = torch.tensor(min_por).to(device)
+
+        elif repre == "sim":
+            now_port = utils.NOW_PORT
+            samples = dirichlet.sample(sample_shape=[10000]).view(-1, N).cpu().numpy()
+            sims = [np.dot(now_port)/np.linalg.norm(now_port) * np.linalg.norm(sample) for sample in samples]
+
+            max_ind = np.argmax(sims)
+            max_por = samples[max_ind]
+            samplep_p = torch.tensor(max_por).to(device)
 
         elif repre is False:
             sampled_p = dirichlet.sample([1])[0]
