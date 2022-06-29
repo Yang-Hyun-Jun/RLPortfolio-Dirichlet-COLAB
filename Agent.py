@@ -2,6 +2,8 @@ import torch
 import torch.nn as nn
 import numpy as np
 
+import utils
+
 
 class agent(nn.Module):
     # 거래 비용

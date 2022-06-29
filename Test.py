@@ -76,11 +76,10 @@ class DIRITester:
         steps_done = 0
         while True:
             utils.NOW_PORT = self.agent.portfolio
-            utils.NOW_PRICE = self.env.get_price()
-            if steps_done == 0:
-                print("NOW PORT and SHAPE", utils.NOW_PORT, utils.NOW_PORT.shape)
-                print("NOW PRICE", utils.NOW_PRICE, utils.NOW_PRICE.shape)
-
+            utils.NOW_PRICE = self.agent.environment.get_price()
+            utils.NOW_BALANCE = self.agent.balance
+            utils.NOW_STOCKS = self.agent.num_stocks
+            utils.NOW_PV = self.agent.portfolio_value
 
             action, confidence, log_prob = \
                 self.agent.get_action(torch.tensor(state1, device=device).float().view(1, self.K, -1),
