@@ -130,12 +130,22 @@ class Actor(nn.Module):
             min_por = samples[min_ind] if min_ind < 10000 else dirichlet.mean.cpu().numpy()
             sampled_p = torch.tensor(min_por).to(device)
 
-        elif repre == "sim":
+        elif repre == "cossim":
             now_port = utils.NOW_PORT
             samples = dirichlet.sample(sample_shape=[10000]).view(-1, N).cpu().numpy()
             mean = dirichlet.mean[0].cpu().numpy()
             EW = np.ones(shape=N) / N
             sims = [np.dot(EW, sample)/(np.linalg.norm(EW) * np.linalg.norm(sample)) for sample in samples]
+
+            max_ind = np.argmax(sims)
+            max_por = samples[max_ind]
+            sampled_p = torch.tensor(max_por).to(device)
+
+        elif repre == "L2sim":
+            now_port = utils.NOW_PORT
+            samples = dirichlet.sample(sample_shape=[10000]).view(-1, N).cpu().numpy()
+            mean = dirichlet.mean[0].cpu().numpy()
+            sims = [np.linalg.norm((mean - sample), ord=2) for sample in samples]
 
             max_ind = np.argmax(sims)
             max_por = samples[max_ind]
