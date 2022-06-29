@@ -93,7 +93,7 @@ class Actor(nn.Module):
         elif repre == "var":
             samples = dirichlet.sample(sample_shape=[30]).view(-1, N).cpu()
             vars = [VaR(utils.STOCK_LIST, torch.softmax(sample[1:], dim=-1)) for sample in samples]
-            var_mean = VaR(utils.STOCK_LIST, torch.softmax(dirichlet.mean[1:].cpu(), dim=-1).view(-1))
+            var_mean = VaR(utils.STOCK_LIST, torch.softmax(dirichlet.mean[0, 1:].cpu(), dim=-1))
             vars.append(var_mean)
 
             max_ind = np.argmax(vars)
@@ -110,7 +110,7 @@ class Actor(nn.Module):
         elif repre == "expected":
             samples = dirichlet.sample(sample_shape=[30]).view(-1, N).cpu()
             returns = [expected(utils.STOCK_LIST, torch.softmax(sample[1:], dim=-1)) for sample in samples]
-            return_mean = expected(utils.STOCK_LIST, torch.softmax(dirichlet.mean[1:].cpu(), dim=-1).view(-1))
+            return_mean = expected(utils.STOCK_LIST, torch.softmax(dirichlet.mean[0, 1:].cpu(), dim=-1))
             returns.append(return_mean)
 
             max_ind = np.argmax(returns)
@@ -121,7 +121,7 @@ class Actor(nn.Module):
             now_port = utils.NOW_PORT
             samples = dirichlet.sample(sample_shape=[1000]).view(-1, N).cpu().numpy()
             fees = [utils.check_fee((now_port - sample)[1:]) for sample in samples]
-            fee_mean = utils.check_fee((now_port - dirichlet.mean.cpu().numpy())[1:])
+            fee_mean = utils.check_fee((now_port - dirichlet.mean.cpu().numpy()[0])[1:])
             fees.append(fee_mean)
 
             min_ind = np.argmin(fees)
@@ -197,5 +197,5 @@ if __name__ == "__main__":
 
     D = Dirichlet(alpha)
     sample = D.sample(sample_shape=[1000]).view(-1, K+1).cpu().numpy()[0]
-    print(D.mean.shape)
-
+    return_mean = expected(["HA", "WBA", "INCY"], torch.softmax(D.mean[0,1:].cpu(), dim=-1))
+    print(return_mean)
