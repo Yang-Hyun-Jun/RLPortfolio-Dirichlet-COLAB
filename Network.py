@@ -10,7 +10,7 @@ from DataManager import expected
 
 device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 
-
+a = [0]
 class Score(nn.Module):
     def __init__(self, state1_dim=5, state2_dim=2, output_dim=1):
         super().__init__()
@@ -118,7 +118,6 @@ class Actor(nn.Module):
             sampled_p = max_por.to(device)
 
         elif repre == "cost":
-            a = [0]
             now_port = utils.NOW_PORT
             samples = dirichlet.sample(sample_shape=[10000]).view(-1, N).cpu().numpy()
             fees = [utils.check_fee((now_port - sample)[1:]) for sample in samples]
