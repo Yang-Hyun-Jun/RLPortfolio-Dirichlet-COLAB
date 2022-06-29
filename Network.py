@@ -10,6 +10,7 @@ from DataManager import expected
 
 device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 
+a = [0]
 
 class Score(nn.Module):
     def __init__(self, state1_dim=5, state2_dim=2, output_dim=1):
@@ -132,7 +133,8 @@ class Actor(nn.Module):
         elif repre == "sim":
             now_port = utils.NOW_PORT
             samples = dirichlet.sample(sample_shape=[10000]).view(-1, N).cpu().numpy()
-            sims = [np.dot(now_port, sample)/np.linalg.norm(now_port) * np.linalg.norm(sample) for sample in samples]
+            mean = dirichlet.mean[0].cpu().numpy()
+            sims = [np.dot(now_port, sample)/(np.linalg.norm(now_port) * np.linalg.norm(sample)) for sample in samples]
 
             max_ind = np.argmax(sims)
             max_por = samples[max_ind]
