@@ -93,11 +93,13 @@ class Actor(nn.Module):
         elif repre == "var":
             samples = dirichlet.sample(sample_shape=[30]).view(-1, N).cpu()
             vars = [VaR(utils.STOCK_LIST, torch.softmax(sample[1:], dim=-1)) for sample in samples]
+            var_mean = VaR(utils.STOCK_LIST, torch.softmax(dirichlet.mean[1:], dim=-1))
+            vars.append(var_mean)
 
             max_ind = np.argmax(vars)
             min_ind = np.argmin(vars)
-            max_por = samples[max_ind]
-            min_por = samples[min_ind]
+            max_por = samples[max_ind] if max_ind < 30 else dirichlet.mean
+            min_por = samples[min_ind] if min_ind < 30 else dirichlet.mean
             sampled_p = max_por.to(device)
 
         elif repre == "random":
@@ -108,9 +110,11 @@ class Actor(nn.Module):
         elif repre == "expected":
             samples = dirichlet.sample(sample_shape=[30]).view(-1, N).cpu()
             returns = [expected(utils.STOCK_LIST, torch.softmax(sample[1:], dim=-1)) for sample in samples]
+            return_mean = expected(utils.STOCK_LIST, torch.softmax(dirichlet.mean[1:], dim=-1))
+            returns.append(return_mean)
 
             max_ind = np.argmax(returns)
-            max_por = samples[max_ind]
+            max_por = samples[max_ind] if max_ind < 30 else dirichlet.mean
             sampled_p = max_por.to(device)
 
         elif repre == "cost":
