@@ -163,11 +163,12 @@ class Actor(nn.Module):
             """
             samples = dirichlet.sample(sample_shape=[10000]).view(-1, N).cpu()
             mean = dirichlet.mean[0].cpu().numpy()
+            mean = np.ones(shape=N)/N
             sims = [dot(mean, sample)/(norm(mean) * norm(sample)) for sample in samples]
             sims_ = sims.copy()
             sims_.sort(reverse=True)
 
-            high_sim = sims_[:30]
+            high_sim = sims_[:10]
             high_ind = [sims.index(high) for high in high_sim]
             high_por = samples[high_ind]
 
@@ -208,7 +209,7 @@ class Actor(nn.Module):
             sims_ = sims.copy()
             sims_.sort(reverse=True)
 
-            high_sim = sims_[:30]
+            high_sim = sims_[:10]
             high_ind = [sims.index(high) for high in high_sim]
             high_por = samples[high_ind]
             high_por = torch.tensor(high_por).to(device)
