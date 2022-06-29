@@ -118,6 +118,7 @@ class Actor(nn.Module):
             sampled_p = max_por.to(device)
 
         elif repre == "cost":
+            a = [0]
             now_port = utils.NOW_PORT
             samples = dirichlet.sample(sample_shape=[10000]).view(-1, N).cpu().numpy()
             fees = [utils.check_fee((now_port - sample)[1:]) for sample in samples]
@@ -125,7 +126,11 @@ class Actor(nn.Module):
             fees.append(fee_mean)
 
             min_ind = np.argmin(fees)
-            print("min_ind", min_ind)
+
+            if 0 in a:
+                min_ind = 10000
+                a.pop()
+
             # min_por = samples[min_ind]
             min_por = samples[min_ind] if min_ind < 10000 else dirichlet.mean.cpu().numpy()
             sampled_p = torch.tensor(min_por).to(device)
@@ -197,6 +202,3 @@ if __name__ == "__main__":
     alpha = torch.cat([cash_alpha, actor(s1_tensor, portfolio)], dim=-1).detach().view(1,-1)
 
     D = Dirichlet(alpha)
-    sample = D.sample(sample_shape=[1000]).view(-1, K+1).cpu().numpy()[0]
-    return_mean = expected(["HA", "WBA", "INCY"], torch.softmax(D.mean[0,1:].cpu(), dim=-1))
-    print(return_mean)
