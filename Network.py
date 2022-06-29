@@ -100,6 +100,11 @@ class Actor(nn.Module):
             min_por = samples[min_ind]
             sampled_p = max_por.to(device)
 
+        elif repre == "random":
+            sample = dirichlet.sample(sample_shape=[1]).view(-1, N).cpu()
+            sample = sample.to(device)
+            sampled_p = sample
+
         elif repre == "expected":
             samples = dirichlet.sample(sample_shape=[30]).view(-1, N).cpu()
             returns = [expected(utils.STOCK_LIST, torch.softmax(sample[1:], dim=-1)) for sample in samples]
