@@ -131,6 +131,41 @@ def get_covariance():
     return cov
 
 
+def get_mean():
+    path_list = ["/Users/mac/PycharmProjects/RLPortfolio(Dirichlet for GPU)/Data/HA",
+                 "/Users/mac/PycharmProjects/RLPortfolio(Dirichlet for GPU)/Data/WBA",
+                 "/Users/mac/PycharmProjects/RLPortfolio(Dirichlet for GPU)/Data/INCY",
+                 "/Users/mac/PycharmProjects/RLPortfolio(Dirichlet for GPU)/Data/BIDU",
+                 "/Users/mac/PycharmProjects/RLPortfolio(Dirichlet for GPU)/Data/TCOM",
+                 "/Users/mac/PycharmProjects/RLPortfolio(Dirichlet for GPU)/Data/AAPL",
+                 "/Users/mac/PycharmProjects/RLPortfolio(Dirichlet for GPU)/Data/COST"]
+
+    price_data = defaultdict(float)
+    names = [path.split("/")[-1] for path in path_list]
+
+    for i, path in enumerate(path_list):
+        data = pd.read_csv(path, thousands=",", converters={"Date": lambda x: str(x)})
+        data = data.replace(0, np.nan)
+        data = data.fillna(method="bfill")
+
+        data = data[data["Date"] <= "2021-12-31"]
+        data = data.set_index("Date", drop=True)
+
+        data = data.astype("float32")
+        prices = data["Close"].values
+        price_data[names[i]] = prices
+
+    len_list = [len(data) for data in price_data.values()]
+    min_len = min(len_list)
+
+    for name in names:
+        price_data[name] = price_data[name][:min_len]
+
+    price_data = pd.DataFrame(price_data)
+    mean_data = price_data.mean()
+    return mean_data
+
+
 def VaR(stock_list, weight):
     cov = pd.read_csv(utils.DATA_DIR + "/COV", index_col=0)
     cov = cov.loc[stock_list, stock_list]
@@ -139,3 +174,17 @@ def VaR(stock_list, weight):
     deviation = np.sqrt(variance)
     VaR = 1.65 * 15000000 * deviation
     return VaR
+
+
+def expected(stock_list, weight):
+    mean_data = pd.read_csv(utils.DATA_DIR + "/MEAN", index_col=0)
+    mean_data = mean_data.loc[stock_list]
+    mean_data = np.array(mean_data).reshape(-1)
+    weight = np.array(weight).reshape(-1)
+    expected = np.dot(mean_data, weight)
+    return expected
+
+
+if __name__ == "__main__":
+    mean_data = get_mean()
+    print(mean_data.loc[["HA", "BIDU"]])

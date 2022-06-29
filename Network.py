@@ -6,6 +6,7 @@ import utils
 from Distribution import Dirichlet
 from itertools import product
 from DataManager import VaR
+from DataManager import expected
 
 device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 
@@ -97,7 +98,15 @@ class Actor(nn.Module):
             min_ind = np.argmin(vars)
             max_por = samples[max_ind]
             min_por = samples[min_ind]
-            sampled_p = max_por
+            sampled_p = max_por.to(device)
+
+        elif repre == "expected":
+            samples = dirichlet.sample(sample_shape=[30]).view(-1, N).cpu()
+            returns = [expected(utils.STOCK_LIST, torch.softmax(sample[1:], dim=-1)) for sample in samples]
+
+            max_ind = np.argmax(returns)
+            max_por = samples[max_ind]
+            sampled_p = max_por.to(device)
 
         elif repre == "cost":
             now_port = utils.NOW_PORT
