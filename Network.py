@@ -125,8 +125,6 @@ class Actor(nn.Module):
             fees.append(fee_mean)
 
             min_ind = np.argmin(fees)
-            print("fees", fees)
-            print("ind", min_ind)
             # min_por = samples[min_ind]
             min_por = samples[min_ind] if min_ind < 10000 else dirichlet.mean.cpu().numpy()
             sampled_p = torch.tensor(min_por).to(device)
