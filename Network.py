@@ -175,6 +175,8 @@ if __name__ == "__main__":
     alpha = torch.cat([cash_alpha, actor(s1_tensor, portfolio)], dim=-1).detach().view(1,-1)
 
     D = Dirichlet(alpha)
-    samples = D.sample(sample_shape=[1000]).view(-1, K+1)[0]
-    print(samples.shape)
+    sample = D.sample(sample_shape=[1000]).view(-1, K+1).cpu().numpy()[0]
+    now_port = np.array([0.25, 0.25, 0.25, 0.25])
+    fee = utils.check_fee((now_port - sample)[1:])
+    print(fee)
 
