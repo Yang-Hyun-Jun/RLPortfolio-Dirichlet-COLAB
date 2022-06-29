@@ -133,6 +133,9 @@ class Actor(nn.Module):
             sampled_p = torch.tensor(min_por).to(device)
 
         elif repre == "cossim":
+            """
+            코사인 유사도
+            """
             samples = dirichlet.sample(sample_shape=[10000]).view(-1, N).cpu().numpy()
             mean = dirichlet.mean[0].cpu().numpy()
             sims = [dot(mean, sample)/(norm(mean) * norm(sample)) for sample in samples]
@@ -142,6 +145,9 @@ class Actor(nn.Module):
             sampled_p = torch.tensor(max_por).to(device)
 
         elif repre == "pearsim":
+            """
+            피어슨 유사도
+            """
             samples = dirichlet.sample(sample_shape=[10000]).view(-1, N).cpu().numpy()
             mean = dirichlet.mean[0].cpu().numpy()
             sims = [np.dot((mean - np.mean(mean)), (sample-np.mean(sample))) \
@@ -152,13 +158,16 @@ class Actor(nn.Module):
             sampled_p = torch.tensor(max_por).to(device)
 
         elif repre == "cosmix1":
+            """
+            cos 유사도 + 기대 수익률 
+            """
             samples = dirichlet.sample(sample_shape=[10000]).view(-1, N).cpu()
             mean = dirichlet.mean[0].cpu().numpy()
             sims = [dot(mean, sample)/(norm(mean) * norm(sample)) for sample in samples]
             sims_ = sims.copy()
             sims_.sort(reverse=True)
 
-            high_sim = sims_[:10]
+            high_sim = sims_[:100]
             high_ind = [sims.index(high) for high in high_sim]
             high_por = samples[high_ind]
 
@@ -168,6 +177,9 @@ class Actor(nn.Module):
             sampled_p = max_por.to(device)
 
         elif repre == "cosmix2":
+            """
+            cos 유사도 + cost
+            """
             samples = dirichlet.sample(sample_shape=[10000]).view(-1, N).cpu()
             mean = dirichlet.mean[0].cpu().numpy()
             sims = [dot(mean, sample)/(norm(mean) * norm(sample)) for sample in samples]
@@ -183,7 +195,27 @@ class Actor(nn.Module):
 
             min_ind = np.argmin(fees)
             min_por = high_por[min_ind]
-            sampled_p = torch.tensor(min_por).to(device)
+            sampled_p = min_por.to(device)
+
+        elif repre == "cosmix3":
+            """
+            피어슨 유사도 + 기대 수익률
+            """
+            samples = dirichlet.sample(sample_shape=[10000]).view(-1, N).cpu()
+            mean = dirichlet.mean[0].cpu().numpy()
+            sims = [np.dot((mean - np.mean(mean)), (sample - np.mean(sample))) \
+                    / (norm(mean - np.mean(mean)) * norm(sample - np.mean(sample))) for sample in samples]
+            sims_ = sims.copy()
+            sims_.sort(reverse=True)
+
+            high_sim = sims_[:100]
+            high_ind = [sims.index(high) for high in high_sim]
+            high_por = samples[high_ind]
+
+            returns = [expected(utils.STOCK_LIST, torch.softmax(por[1:], dim=-1)) for por in high_por]
+            max_ind = np.argmax(returns)
+            max_por = high_por[max_ind]
+            sampled_p = max_por.to(device)
 
         elif repre is False:
             sampled_p = dirichlet.sample([1])[0]
