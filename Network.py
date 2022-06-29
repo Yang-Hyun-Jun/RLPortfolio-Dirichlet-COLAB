@@ -3,6 +3,8 @@ import torch.nn as nn
 import numpy as np
 import utils
 
+from numpy import dot
+from numpy.linalg import norm
 from Distribution import Dirichlet
 from itertools import product
 from DataManager import VaR
@@ -131,21 +133,19 @@ class Actor(nn.Module):
             sampled_p = torch.tensor(min_por).to(device)
 
         elif repre == "cossim":
-            now_port = utils.NOW_PORT
             samples = dirichlet.sample(sample_shape=[10000]).view(-1, N).cpu().numpy()
             mean = dirichlet.mean[0].cpu().numpy()
-            EW = np.ones(shape=N) / N
-            sims = [np.dot(EW, sample)/(np.linalg.norm(EW) * np.linalg.norm(sample)) for sample in samples]
+            sims = [dot(mean, sample)/(norm(mean) * norm(sample)) for sample in samples]
 
             max_ind = np.argmax(sims)
             max_por = samples[max_ind]
             sampled_p = torch.tensor(max_por).to(device)
 
-        elif repre == "L2sim":
-            now_port = utils.NOW_PORT
+        elif repre == "pearsim":
             samples = dirichlet.sample(sample_shape=[10000]).view(-1, N).cpu().numpy()
             mean = dirichlet.mean[0].cpu().numpy()
-            sims = [np.linalg.norm((mean - sample), ord=2) for sample in samples]
+            sims = [np.dot((mean - np.mean(mean)), (sample-np.mean(sample))) \
+                    / (norm(mean - np.mean(mean)) * norm(sample - np.mean(sample))) for sample in samples]
 
             max_ind = np.argmax(sims)
             max_por = samples[max_ind]
