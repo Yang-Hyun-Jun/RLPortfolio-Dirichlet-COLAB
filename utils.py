@@ -75,9 +75,7 @@ def check_fee(action):
         price = close_p[i]
         if -1 <= m_action[i] < -delta:
             trading_unit = decide_trading_unit(confidence[i], price)
-            print(trading_unit)
-            print(NOW_STOCKS)
-            trading_unit = min(trading_unit, NOW_STOCKS)
+            trading_unit = min(trading_unit, NOW_STOCKS[i])
             invest_amount = price * trading_unit
             fee += invest_amount * cost
 
