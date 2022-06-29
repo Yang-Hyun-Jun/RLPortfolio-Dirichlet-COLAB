@@ -211,11 +211,12 @@ class Actor(nn.Module):
             high_sim = sims_[:30]
             high_ind = [sims.index(high) for high in high_sim]
             high_por = samples[high_ind]
+            high_por = torch.tensor(high_por).to(device)
 
             returns = [expected(utils.STOCK_LIST, torch.softmax(por[1:], dim=-1)) for por in high_por]
             max_ind = np.argmax(returns)
             max_por = high_por[max_ind]
-            sampled_p = torch.tensor(max_por).to(device)
+            sampled_p = max_por.to(device)
 
         elif repre is False:
             sampled_p = dirichlet.sample([1])[0]
