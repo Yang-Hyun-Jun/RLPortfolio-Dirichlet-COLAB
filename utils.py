@@ -65,12 +65,6 @@ def check_fee(action):
     confidence = abs(action)
     m_action = validate_action(action, delta)
 
-    print("PV", utils.NOW_PV)
-    print("STOCKS", utils.NOW_STOCKS)
-    print("PRICE", utils.NOW_PRICE)
-    print("BALANCE", utils.NOW_BALANCE)
-    print("PORT", utils.NOW_PORT)
-
     for i in range(m_action.shape[0]):
         price = close_p[i]
         if -1 <= m_action[i] < -delta:
