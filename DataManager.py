@@ -177,8 +177,7 @@ def VaR(stock_list, weight):
 
 
 def expected(stock_list, weight):
-    # mean_data = pd.read_csv(utils.DATA_DIR + "/MEAN", index_col=0)
-    mean_data = pd.read_csv("/Users/mac/PycharmProjects/RLPortfolio(Dirichlet for GPU)/Data/MEAN", index_col=0)
+    mean_data = pd.read_csv(utils.DATA_DIR + "/MEAN", index_col=0)
     mean_data = mean_data.loc[stock_list]
     mean_data = np.array(mean_data).reshape(-1)
     weight = np.array(weight).reshape(-1)
