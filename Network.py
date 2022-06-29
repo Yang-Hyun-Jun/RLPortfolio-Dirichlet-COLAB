@@ -136,7 +136,7 @@ class Actor(nn.Module):
 
             max_ind = np.argmax(sims)
             max_por = samples[max_ind]
-            samplep_p = torch.tensor(max_por).to(device)
+            sampled_p = torch.tensor(max_por).to(device)
 
         elif repre is False:
             sampled_p = dirichlet.sample([1])[0]
