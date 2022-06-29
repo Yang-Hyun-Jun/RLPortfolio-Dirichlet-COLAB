@@ -10,7 +10,7 @@ from DataManager import expected
 
 device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 
-a = [0]
+a = [0, 0, 0, 0, 0]
 class Score(nn.Module):
     def __init__(self, state1_dim=5, state2_dim=2, output_dim=1):
         super().__init__()
