@@ -158,7 +158,7 @@ class Actor(nn.Module):
             sims_ = sims.copy()
             sims_.sort(reverse=True)
 
-            high_sim = sims_[:3]
+            high_sim = sims_[:10]
             high_ind = [sims.index(high) for high in high_sim]
             high_por = samples[high_ind]
 
@@ -174,12 +174,12 @@ class Actor(nn.Module):
             sims_ = sims.copy()
             sims_.sort(reverse=True)
 
-            high_sim = sims_[:5]
+            high_sim = sims_[:10]
             high_ind = [sims.index(high) for high in high_sim]
             high_por = samples[high_ind]
 
             now_port = utils.NOW_PORT
-            fees = [utils.check_fee((now_port - high)[1:]) for high in high_por]
+            fees = [utils.check_fee((now_port - high.numpy())[1:]) for high in high_por]
 
             min_ind = np.argmin(fees)
             min_por = high_por[min_ind]
