@@ -138,7 +138,6 @@ class Actor(nn.Module):
             """
             samples = dirichlet.sample(sample_shape=[10000]).view(-1, N).cpu().numpy()
             mean = dirichlet.mean[0].cpu().numpy()
-            mean = np.array([0.5, 0.2, 0.2, 0.1])
             sims = [dot(mean, sample)/(norm(mean) * norm(sample)) for sample in samples]
 
             max_ind = np.argmax(sims)
@@ -288,7 +287,7 @@ class Actor(nn.Module):
             high_sim = sims_[:10]
             high_ind = [sims.index(high) for high in high_sim]
             high_por = samples[high_ind]
-            high_por = torch.tensor(high_por).to(device)
+            high_por = torch.tensor(high_por)
 
             returns = [expected(utils.STOCK_LIST, torch.softmax(por[1:], dim=-1)) for por in high_por]
             max_ind = np.argmax(returns)
