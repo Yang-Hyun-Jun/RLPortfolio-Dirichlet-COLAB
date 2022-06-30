@@ -191,7 +191,7 @@ class Actor(nn.Module):
             high_por = samples[high_ind]
 
             returns = [expected(utils.STOCK_LIST, torch.softmax(por[1:], dim=-1)) for por in high_por]
-            low_ind = np.argmax(returns)
+            low_ind = np.argmin(returns)
             low_por = high_por[low_ind]
             sampled_p = low_por.to(device)
 
@@ -250,9 +250,28 @@ class Actor(nn.Module):
             high_por = samples[high_ind]
 
             vars = [VaR(utils.STOCK_LIST, torch.softmax(por[1:], dim=-1)) for por in high_por]
-            min_ind = np.argmax(vars)
+            min_ind = np.argmin(vars)
             min_por = high_por[min_ind]
             sampled_p = min_por.to(device)
+
+        elif repre == "cosmix6":
+            """
+            cos 유사도 + log high
+            """
+            samples = dirichlet.sample(sample_shape=[10000]).view(-1, N).cpu()
+            mean = dirichlet.mean[0].cpu().numpy()
+            sims = [dot(mean, sample)/(norm(mean) * norm(sample)) for sample in samples]
+            sims_ = sims.copy()
+            sims_.sort(reverse=True)
+
+            high_sim = sims_[:10]
+            high_ind = [sims.index(high) for high in high_sim]
+            high_por = samples[high_ind]
+
+            logs = [Dirichlet.log_prob(por) for por in high_por]
+            max_ind = np.argmax(logs)
+            max_por = high_por[max_ind]
+            sampled_p = max_por.to(device)
 
         elif repre == "pearmix1":
             """
