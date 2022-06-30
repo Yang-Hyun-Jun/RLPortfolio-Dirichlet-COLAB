@@ -258,7 +258,7 @@ class Actor(nn.Module):
             """
             mode + cos 유사도 + 기대 수익률 low
             """
-            samples = dirichlet.sample(sample_shape=[1000]).view(-1, N)
+            samples = dirichlet.sample(sample_shape=[2000]).view(-1, N)
             logs = [dirichlet.log_prob(sample).cpu() for sample in samples]
             samples = samples.cpu()
 
@@ -272,9 +272,9 @@ class Actor(nn.Module):
             high_por = samples[high_ind]
 
             returns = [expected(utils.STOCK_LIST, torch.softmax(por[1:], dim=-1)) for por in high_por]
-            min_ind = np.argmin(returns)
-            min_por = high_por[min_ind]
-            sampled_p = min_por.to(device)
+            max_ind = np.argmin(returns)
+            max_por = high_por[max_ind]
+            sampled_p = max_por.to(device)
 
         elif repre == "pearmix1":
             """
