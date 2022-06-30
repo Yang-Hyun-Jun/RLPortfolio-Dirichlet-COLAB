@@ -272,7 +272,7 @@ class Actor(nn.Module):
             high_por = samples[high_ind]
 
             returns = [expected(utils.STOCK_LIST, torch.softmax(por[1:], dim=-1)) for por in high_por]
-            max_ind = np.argmin(returns)
+            max_ind = np.argmax(returns)
             max_por = high_por[max_ind]
             sampled_p = max_por.to(device)
 
