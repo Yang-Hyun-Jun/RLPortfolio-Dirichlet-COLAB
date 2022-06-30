@@ -280,14 +280,14 @@ class Actor(nn.Module):
             samples = dirichlet.sample(sample_shape=[10000]).view(-1, N)
             logs = [dirichlet.log_prob(sample) for sample in samples]
 
-            high = samples[logs.index(max(logs))]
+            high = samples[logs.index(max(logs))].cpu()
             sims = [dot(high, sample)/(norm(high) * norm(sample)) for sample in samples]
             sims_ = sims.copy()
             sims_.sort(reverse=True)
 
             high_sim = sims_[:10]
             high_ind = [sims.index(high) for high in high_sim]
-            high_por = samples[high_ind]
+            high_por = samples[high_ind].cpu()
 
             returns = [expected(utils.STOCK_LIST, torch.softmax(por[1:], dim=-1)) for por in high_por]
             min_ind = np.argmin(returns)
