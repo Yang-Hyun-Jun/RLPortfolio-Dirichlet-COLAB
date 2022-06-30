@@ -277,9 +277,9 @@ class Actor(nn.Module):
             """
             mode + cos 유사도 + 기대 수익률 low
             """
-            dirichlet = dirichlet.cpu()
             samples = dirichlet.sample(sample_shape=[10000]).view(-1, N)
-            logs = [dirichlet.log_prob(sample) for sample in samples]
+            logs = [dirichlet.log_prob(sample).cpu() for sample in samples]
+            samples = samples.cpu()
 
             high = samples[logs.index(max(logs))]
             sims = [dot(high, sample)/(norm(high) * norm(sample)) for sample in samples]
@@ -288,7 +288,7 @@ class Actor(nn.Module):
 
             high_sim = sims_[:10]
             high_ind = [sims.index(high) for high in high_sim]
-            high_por = samples[high_ind].to(device)
+            high_por = samples[high_ind]
 
             returns = [expected(utils.STOCK_LIST, torch.softmax(por[1:], dim=-1)) for por in high_por]
             min_ind = np.argmin(returns)
