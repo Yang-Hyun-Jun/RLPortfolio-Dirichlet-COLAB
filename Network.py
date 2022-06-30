@@ -278,7 +278,7 @@ class Actor(nn.Module):
             mode + cos 유사도 + 기대 수익률 low
             """
             samples = dirichlet.sample(sample_shape=[10000]).view(-1, N).cpu()
-            logs = [Dirichlet.log_prob(sample) for sample in samples]
+            logs = [dirichlet.log_prob(sample) for sample in samples]
 
             high = samples[logs.index(max(logs))]
             sims = [dot(high, sample)/(norm(high) * norm(sample)) for sample in samples]
@@ -381,3 +381,7 @@ if __name__ == "__main__":
     alpha = torch.cat([cash_alpha, actor(s1_tensor, portfolio)], dim=-1).detach().view(1,-1)
 
     D = Dirichlet(alpha)
+    samples = D.sample(sample_shape=[10000]).view(-1, K+1).cpu()
+    logs = [D.log_prob(sample) for sample in samples]
+    high = samples[logs.index(max(logs))]
+    print(high)
