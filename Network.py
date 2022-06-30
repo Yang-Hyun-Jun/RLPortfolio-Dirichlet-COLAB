@@ -277,7 +277,7 @@ class Actor(nn.Module):
             """
             mode + cos 유사도 + 기대 수익률 low
             """
-            samples = dirichlet.sample(sample_shape=[10000]).view(-1, N).cpu()
+            samples = dirichlet.sample(sample_shape=[10000]).view(-1, N)
             logs = [dirichlet.log_prob(sample) for sample in samples]
 
             high = samples[logs.index(max(logs))]
