@@ -159,7 +159,7 @@ class Actor(nn.Module):
 
         elif repre == "cosmix1":
             """
-            cos 유사도 + 기대 수익률 
+            cos 유사도 + 기대 수익률 high
             """
             samples = dirichlet.sample(sample_shape=[10000]).view(-1, N).cpu()
             mean = dirichlet.mean[0].cpu().numpy()
@@ -177,6 +177,25 @@ class Actor(nn.Module):
             sampled_p = max_por.to(device)
 
         elif repre == "cosmix2":
+            """
+            cos 유사도 + 기대 수익률 low
+            """
+            samples = dirichlet.sample(sample_shape=[10000]).view(-1, N).cpu()
+            mean = dirichlet.mean[0].cpu().numpy()
+            sims = [dot(mean, sample)/(norm(mean) * norm(sample)) for sample in samples]
+            sims_ = sims.copy()
+            sims_.sort(reverse=True)
+
+            high_sim = sims_[:10]
+            high_ind = [sims.index(high) for high in high_sim]
+            high_por = samples[high_ind]
+
+            returns = [expected(utils.STOCK_LIST, torch.softmax(por[1:], dim=-1)) for por in high_por]
+            low_ind = np.argmax(returns)
+            low_por = high_por[low_ind]
+            sampled_p = low_por.to(device)
+
+        elif repre == "cosmix3":
             """
             cos 유사도 + cost
             """
@@ -197,7 +216,7 @@ class Actor(nn.Module):
             min_por = high_por[min_ind]
             sampled_p = min_por.to(device)
 
-        elif repre == "cosmix3":
+        elif repre == "cosmix4":
             """
             cos 유사도 + VaR high
             """
@@ -216,7 +235,7 @@ class Actor(nn.Module):
             max_por = high_por[max_ind]
             sampled_p = max_por.to(device)
 
-        elif repre == "cosmix4":
+        elif repre == "cosmix5":
             """
             cos 유사도 + VaR low
             """
