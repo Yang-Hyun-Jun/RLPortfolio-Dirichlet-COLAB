@@ -138,6 +138,7 @@ class Actor(nn.Module):
             """
             samples = dirichlet.sample(sample_shape=[10000]).view(-1, N).cpu().numpy()
             mean = dirichlet.mean[0].cpu().numpy()
+            mean = utils.NOW_PORT
             sims = [dot(mean, sample)/(norm(mean) * norm(sample)) for sample in samples]
 
             max_ind = np.argmax(sims)
@@ -150,6 +151,7 @@ class Actor(nn.Module):
             """
             samples = dirichlet.sample(sample_shape=[10000]).view(-1, N).cpu().numpy()
             mean = dirichlet.mean[0].cpu().numpy()
+            mean = utils.NOW_PORT
             sims = [np.dot((mean - np.mean(mean)), (sample-np.mean(sample))) \
                     / (norm(mean - np.mean(mean)) * norm(sample - np.mean(sample))) for sample in samples]
 
