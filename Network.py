@@ -256,28 +256,9 @@ class Actor(nn.Module):
 
         elif repre == "cosmix6":
             """
-            cos 유사도 + log high
-            """
-            samples = dirichlet.sample(sample_shape=[10000]).view(-1, N).cpu()
-            mean = dirichlet.mean[0].cpu().numpy()
-            sims = [dot(mean, sample)/(norm(mean) * norm(sample)) for sample in samples]
-            sims_ = sims.copy()
-            sims_.sort(reverse=True)
-
-            high_sim = sims_[:10]
-            high_ind = [sims.index(high) for high in high_sim]
-            high_por = samples[high_ind]
-
-            logs = [dirichlet.log_prob(por) for por in high_por]
-            max_ind = np.argmax(logs)
-            max_por = high_por[max_ind]
-            sampled_p = max_por.to(device)
-
-        elif repre == "cosmix7":
-            """
             mode + cos 유사도 + 기대 수익률 low
             """
-            samples = dirichlet.sample(sample_shape=[10000]).view(-1, N)
+            samples = dirichlet.sample(sample_shape=[1000]).view(-1, N)
             logs = [dirichlet.log_prob(sample).cpu() for sample in samples]
             samples = samples.cpu()
 
