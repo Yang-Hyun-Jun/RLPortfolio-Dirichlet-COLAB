@@ -334,14 +334,16 @@ class Actor(nn.Module):
             high_sim = sims_[:10]
             high_ind = [sims.index(high) for high in high_sim]
             high_por = samples[high_ind]
-            high_por = torch.tensor(high_por)
+            # high_por = torch.tensor(high_por)
 
-            returns = [variance(utils.STOCK_LIST, torch.softmax(por[1:], dim=-1)) for por in high_por]
+            returns = [variance(utils.STOCK_LIST, torch.softmax(torch.tensor(por[1:]), dim=-1)) for por in high_por]
             for _ in range(4):
-                returns.pop(returns.index(min(returns)))
+                returns.pop(np.argmin(returns))
+                high_por.pop(np.argmin(returns))
+
             min_ind = np.argmin(returns)
             min_por = high_por[min_ind]
-            sampled_p = min_por.to(device)
+            sampled_p = torch.tensor(min_por).to(device)
 
         elif repre is False:
             sampled_p = dirichlet.sample([1])[0]
@@ -412,4 +414,3 @@ if __name__ == "__main__":
     samples = D.sample(sample_shape=[10000]).view(-1, K+1).cpu()
     logs = [D.log_prob(sample) for sample in samples]
     high = samples[logs.index(max(logs))]
-    print(high)
