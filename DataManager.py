@@ -184,6 +184,13 @@ def expected(stock_list, weight):
     expected = np.dot(mean_data, weight)
     return expected
 
+def variance(stock_list, weight):
+    cov = pd.read_csv(utils.DATA_DIR + "/COV", index_col=0)
+    cov = cov.loc[stock_list, stock_list]
+    weight = np.array(weight)
+    v = weight.T.dot(cov).dot(weight)
+    return v
+
 
 if __name__ == "__main__":
     mean_data = get_mean()

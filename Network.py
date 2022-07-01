@@ -9,6 +9,7 @@ from Distribution import Dirichlet
 from itertools import product
 from DataManager import VaR
 from DataManager import expected
+from DataManager import variance
 
 device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 
@@ -277,6 +278,26 @@ class Actor(nn.Module):
             max_por = high_por[max_ind]
             sampled_p = max_por.to(device)
 
+        elif repre == "cosmix7":
+            """
+            코사인 유사도 + 최소 분산 
+            """
+            samples = dirichlet.sample(sample_shape=[10000]).view(-1, N).cpu().numpy()
+            mean = dirichlet.mean[0].cpu().numpy()
+            sims = [dot(mean, sample)/(norm(mean) * norm(sample)) for sample in samples]
+            sims_ = sims.copy()
+            sims_.sort(reverse=True)
+
+            high_sim = sims_[:10]
+            high_ind = [sims.index(high) for high in high_sim]
+            high_por = samples[high_ind]
+            high_por = torch.tensor(high_por)
+
+            returns = [variance(utils.STOCK_LIST, torch.softmax(por[1:], dim=-1)) for por in high_por]
+            min_ind = np.argmax(returns)
+            min_por = high_por[min_ind]
+            sampled_p = min_por.to(device)
+
         elif repre == "pearmix1":
             """
             피어슨 유사도 + 기대 수익률
@@ -297,6 +318,27 @@ class Actor(nn.Module):
             max_ind = np.argmax(returns)
             max_por = high_por[max_ind]
             sampled_p = max_por.to(device)
+
+        elif repre == "pearmix2":
+            """
+            피어슨 유사도 + 최소 분산 
+            """
+            samples = dirichlet.sample(sample_shape=[10000]).view(-1, N).cpu().numpy()
+            mean = dirichlet.mean[0].cpu().numpy()
+            sims = [np.dot((mean - np.mean(mean)), (sample - np.mean(sample))) \
+                    / (norm(mean - np.mean(mean)) * norm(sample - np.mean(sample))) for sample in samples]
+            sims_ = sims.copy()
+            sims_.sort(reverse=True)
+
+            high_sim = sims_[:10]
+            high_ind = [sims.index(high) for high in high_sim]
+            high_por = samples[high_ind]
+            high_por = torch.tensor(high_por)
+
+            returns = [variance(utils.STOCK_LIST, torch.softmax(por[1:], dim=-1)) for por in high_por]
+            min_ind = np.argmax(returns)
+            min_por = high_por[min_ind]
+            sampled_p = min_por.to(device)
 
         elif repre is False:
             sampled_p = dirichlet.sample([1])[0]
