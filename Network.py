@@ -334,14 +334,9 @@ class Actor(nn.Module):
             high_sim = sims_[:10]
             high_ind = [sims.index(high) for high in high_sim]
             high_por = samples[high_ind]
-            high_por = list(high_por)
             # high_por = torch.tensor(high_por)
 
             returns = [variance(utils.STOCK_LIST, torch.softmax(torch.tensor(por[1:]), dim=-1)) for por in high_por]
-            for _ in range(1):
-                returns.pop(np.argmin(returns))
-                high_por.pop(np.argmin(returns))
-
             min_ind = np.argmin(returns)
             min_por = high_por[min_ind]
             sampled_p = torch.tensor(min_por).to(device)
