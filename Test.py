@@ -85,6 +85,11 @@ class DIRITester:
                 self.agent.get_action(torch.tensor(state1, device=device).float().view(1, self.K, -1),
                                       torch.tensor(portfolio, device=device).float().view(1, self.K + 1, -1), self.repre)
 
+            if steps_done == 0:
+                aa = action
+
+            action = aa
+
             #3일 단위로 거래
             if self.holding:
                 if steps_done % 3:

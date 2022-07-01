@@ -330,7 +330,7 @@ class Actor(nn.Module):
             sims_ = sims.copy()
             sims_.sort(reverse=True)
 
-            high_sim = sims_[:10]
+            high_sim = sims_[:50]
             high_ind = [sims.index(high) for high in high_sim]
             high_por = samples[high_ind]
             high_por = list(high_por)
