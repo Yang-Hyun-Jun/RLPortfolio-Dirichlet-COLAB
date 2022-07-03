@@ -82,13 +82,16 @@ class DIRITester:
             utils.NOW_STOCKS = self.agent.num_stocks
             utils.NOW_PV = self.agent.portfolio_value
 
-            action, confidence, log_prob = \
+            action, confidence, log_prob, sample = \
                 self.agent.get_action(torch.tensor(state1, device=device).float().view(1, self.K, -1),
                                       torch.tensor(portfolio, device=device).float().view(1, self.K + 1, -1), self.repre)
 
-            if steps_done >= 1:
-                aa = np.zeros(shape=self.K)
-                action = aa
+            if steps_done == 0:
+                aa = self.agent.portfolio
+                bb = sample
+                action_ = (bb[0] - aa)[1:]
+
+            action = action_
 
             #3일 단위로 거래
             if self.holding:
