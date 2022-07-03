@@ -93,6 +93,7 @@ class DIRITester:
                 action_ = (aa[0] - bb)[1:]
 
             action = action_
+            confidence = abs(action_)
 
             #3일 단위로 거래
             if self.holding:
