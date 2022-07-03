@@ -87,9 +87,10 @@ class DIRITester:
                                       torch.tensor(portfolio, device=device).float().view(1, self.K + 1, -1), self.repre)
 
             if steps_done == 0:
-                aa = self.agent.portfolio
-                bb = sample
-                action_ = (bb[0] - aa)[1:]
+                aa = sample
+            if steps_done >= 0:
+                bb = self.agent.portfolio
+                action_ = (aa[0] - bb)[1:]
 
             action = action_
 
