@@ -87,8 +87,13 @@ class DIRITester:
                                       torch.tensor(portfolio, device=device).float().view(1, self.K + 1, -1), self.repre)
 
             if steps_done >= 1:
-                action = np.zeros(shape=self.K)
-                confidence = abs(action)
+                aa = sample
+            if steps_done >= 0:
+                bb = self.agent.portfolio
+                action_ = (aa[0] - bb)[1:]
+
+            action = action_
+            confidence = abs(action)
 
             #3일 단위로 거래
             if self.holding:
