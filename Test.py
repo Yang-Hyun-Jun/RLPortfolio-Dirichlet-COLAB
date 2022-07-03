@@ -74,6 +74,7 @@ class DIRITester:
         state1 = self.agent.environment.observe()
         portfolio = self.agent.portfolio
         steps_done = 0
+
         while True:
             utils.NOW_PORT = self.agent.portfolio
             utils.NOW_PRICE = self.agent.environment.get_price()
@@ -85,10 +86,9 @@ class DIRITester:
                 self.agent.get_action(torch.tensor(state1, device=device).float().view(1, self.K, -1),
                                       torch.tensor(portfolio, device=device).float().view(1, self.K + 1, -1), self.repre)
 
-            if steps_done == 1:
+            if steps_done >= 1:
                 aa = np.zeros(shape=self.K)
-
-            action = aa
+                action = aa
 
             #3일 단위로 거래
             if self.holding:
