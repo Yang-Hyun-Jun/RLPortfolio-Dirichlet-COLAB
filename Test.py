@@ -91,9 +91,8 @@ class DIRITester:
             if steps_done >= 0:
                 bb = self.agent.portfolio
                 action_ = (aa[0] - bb)[1:]
-
-            action = action_
-            confidence = abs(action)
+                action = action_
+                confidence = abs(action)
 
             #3일 단위로 거래
             if self.holding:
