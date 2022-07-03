@@ -22,9 +22,13 @@ e = "/content/RLPortfolio-Dirichlet-COLAB/Data/COST"
 f = "/content/RLPortfolio-Dirichlet-COLAB/Data/BIDU"
 g = "/content/RLPortfolio-Dirichlet-COLAB/Data/TCOM"
 
-
-
-
+local_path = ["/Users/mac/PycharmProjects/RLPortfolio(Dirichlet for GPU)/Data/HA",
+              "/Users/mac/PycharmProjects/RLPortfolio(Dirichlet for GPU)/Data/WBA",
+              "/Users/mac/PycharmProjects/RLPortfolio(Dirichlet for GPU)/Data/INCY",
+              "/Users/mac/PycharmProjects/RLPortfolio(Dirichlet for GPU)/Data/BIDU",
+              "/Users/mac/PycharmProjects/RLPortfolio(Dirichlet for GPU)/Data/TCOM",
+              "/Users/mac/PycharmProjects/RLPortfolio(Dirichlet for GPU)/Data/AAPL",
+              "/Users/mac/PycharmProjects/RLPortfolio(Dirichlet for GPU)/Data/COST"]
 
 dataset1 = [a, b, c]
 dataset2 = [a, b, c, f]

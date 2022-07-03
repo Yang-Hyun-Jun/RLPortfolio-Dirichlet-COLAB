@@ -96,7 +96,7 @@ def get_scaling(data):
 
 
 def get_covariance():
-    path_list = utils.dataset6
+    path_list = utils.local_path
     return_data = defaultdict(float)
     names = [path.split("/")[-1] for path in path_list]
 
@@ -113,10 +113,10 @@ def get_covariance():
         returns = [0] * len(prices)
 
         for k in range(len(prices)):
-            if k == 0:
+            if k <= 29:
                 returns[k] = 0.
             else:
-                returns[k] = (prices[k] - prices[k - 1]) / prices[k - 1]
+                returns[k] = (prices[k] - prices[k - 30]) / prices[k - 30]
 
         return_data[names[i]] = returns
 
@@ -126,20 +126,13 @@ def get_covariance():
     for name in names:
         return_data[name] = return_data[name][:min_len]
 
-    return_data = pd.DataFrame(return_data)
+    return_data = pd.DataFrame(return_data).loc[30:]
     cov = return_data.cov()
     return cov
 
 
 def get_mean():
-    path_list = ["/Users/mac/PycharmProjects/RLPortfolio(Dirichlet for GPU)/Data/HA",
-                 "/Users/mac/PycharmProjects/RLPortfolio(Dirichlet for GPU)/Data/WBA",
-                 "/Users/mac/PycharmProjects/RLPortfolio(Dirichlet for GPU)/Data/INCY",
-                 "/Users/mac/PycharmProjects/RLPortfolio(Dirichlet for GPU)/Data/BIDU",
-                 "/Users/mac/PycharmProjects/RLPortfolio(Dirichlet for GPU)/Data/TCOM",
-                 "/Users/mac/PycharmProjects/RLPortfolio(Dirichlet for GPU)/Data/AAPL",
-                 "/Users/mac/PycharmProjects/RLPortfolio(Dirichlet for GPU)/Data/COST"]
-
+    path_list = utils.local_path
     price_data = defaultdict(float)
     names = [path.split("/")[-1] for path in path_list]
 
@@ -185,7 +178,7 @@ def expected(stock_list, weight):
     return expected
 
 def variance(stock_list, weight):
-    cov = pd.read_csv(utils.DATA_DIR + "/COV", index_col=0)
+    cov = pd.read_csv(utils.DATA_DIR + "/COV30", index_col=0)
     cov = cov.loc[stock_list, stock_list]
     weight = np.array(weight)
     v = weight.T.dot(cov).dot(weight)
@@ -193,5 +186,4 @@ def variance(stock_list, weight):
 
 
 if __name__ == "__main__":
-    mean_data = get_mean()
-    print(mean_data.loc[["HA", "BIDU"]])
+    cov = get_covariance()

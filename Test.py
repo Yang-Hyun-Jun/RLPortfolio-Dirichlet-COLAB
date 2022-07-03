@@ -112,7 +112,8 @@ class DIRITester:
                 print(f"actions:{action}")
                 print(f"portfolio:{self.agent.portfolio}")
                 print(f"cum_fee:{self.agent.cum_fee}")
-            if done:
+            # if done:
+            if steps_done % 30 == 0:
                 print(f"model:{self.agent.profitloss}")
                 print(f"num buy:{self.num_buy}")
                 print(f"num sell:{self.num_sell}")
