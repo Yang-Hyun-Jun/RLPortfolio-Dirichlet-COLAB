@@ -345,6 +345,7 @@ class Actor(nn.Module):
             sampled_p = dirichlet.sample([1])[0]
 
         log_pi = dirichlet.log_prob(sampled_p)
+        print(sampled_p)
         return sampled_p, log_pi
 
 

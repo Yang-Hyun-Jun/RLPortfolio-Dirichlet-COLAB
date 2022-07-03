@@ -118,6 +118,7 @@ class DIRITester:
                 print(f"num buy:{self.num_buy}")
                 print(f"num sell:{self.num_sell}")
                 print(f"num hold:{self.num_hold}")
+                print(f"portfolio:{self.agent.portfolio}")
                 break
 
 
