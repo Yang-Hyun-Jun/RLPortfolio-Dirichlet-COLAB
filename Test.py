@@ -85,7 +85,7 @@ class DIRITester:
                 self.agent.get_action(torch.tensor(state1, device=device).float().view(1, self.K, -1),
                                       torch.tensor(portfolio, device=device).float().view(1, self.K + 1, -1), self.repre)
 
-            if steps_done == 0:
+            if steps_done == 1:
                 aa = np.zeros(shape=self.K)
 
             action = aa
