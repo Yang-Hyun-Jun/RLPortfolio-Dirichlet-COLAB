@@ -337,15 +337,15 @@ class Actor(nn.Module):
             # high_por = torch.tensor(high_por)
 
             returns = [variance(utils.STOCK_LIST, torch.softmax(torch.tensor(por[1:]), dim=-1)) for por in high_por]
-            min_ind = np.argmax(returns)
+            min_ind = np.argmin(returns)
             min_por = high_por[min_ind]
             sampled_p = torch.tensor(min_por).to(device)
+            print(sampled_p)
 
         elif repre is False:
             sampled_p = dirichlet.sample([1])[0]
 
         log_pi = dirichlet.log_prob(sampled_p)
-        print(sampled_p)
         return sampled_p, log_pi
 
 
