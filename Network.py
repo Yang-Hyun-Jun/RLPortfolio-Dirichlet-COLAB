@@ -337,7 +337,7 @@ class Actor(nn.Module):
             # high_por = torch.tensor(high_por)
 
             returns = [variance(utils.STOCK_LIST, torch.softmax(torch.tensor(por[1:]), dim=-1)) for por in high_por]
-            for _ in range(9):
+            for _ in range(19):
                 ind = np.argmin(returns)
                 returns.pop(ind)
                 high_por.pop(ind)
