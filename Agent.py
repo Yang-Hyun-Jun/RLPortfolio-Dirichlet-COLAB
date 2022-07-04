@@ -73,6 +73,11 @@ class agent(nn.Module):
             sampled_p = sampled_p.cpu().numpy()
             log_prob = log_prob.cpu().numpy()
             action = (sampled_p[0] - self.portfolio)[1:]
+
+            print("sampled_p", sampled_p[0])
+            print("port", self.portfolio)
+            print("action", action)
+
             confidence = abs(action)
             self.actor.train()
         return action, confidence, log_prob

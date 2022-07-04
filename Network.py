@@ -124,18 +124,11 @@ class Actor(nn.Module):
             now_port = utils.NOW_PORT
             samples_ = dirichlet.sample(sample_shape=[10000]).view(-1, N).cpu().numpy()
             samples = np.zeros(shape=(samples_.shape[0]+1, samples_.shape[1]))
-            samples[:10000] = samples_[:10000]
+            samples[:10000] = samples_
             samples[10000] = dirichlet.mean.cpu().numpy().reshape(-1, N)
 
             fees = [utils.check_fee((sample - now_port)[1:]) for sample in samples]
-
-            samples = list(samples)
-            for _ in range(100):
-                ind = np.argmin(fees)
-                fees.pop(ind)
-                samples.pop(ind)
-
-            min_ind = np.argmin(fees)
+            min_ind = np.argmax(fees)
             min_por = samples[min_ind]
             sampled_p = torch.tensor(min_por).to(device)
 
