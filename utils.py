@@ -94,3 +94,9 @@ def check_fee(action):
             invest_amount = price * trading_unit
             fee += invest_amount * cost
     return fee
+
+
+if __name__ == "__main__":
+    a = [1, 3, 2, 4]
+    a.sort(reverse=False)
+    print(a)
