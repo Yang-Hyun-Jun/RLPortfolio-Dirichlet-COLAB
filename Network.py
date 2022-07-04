@@ -130,15 +130,14 @@ class Actor(nn.Module):
             fees = [utils.check_fee((sample - now_port)[1:]) for sample in samples]
 
             samples = list(samples)
-            for _ in range(3):
-                ind = np.argmax(fees)
+            for _ in range(100):
+                ind = np.argmin(fees)
                 fees.pop(ind)
                 samples.pop(ind)
 
-            min_ind = np.argmax(fees)
+            min_ind = np.argmin(fees)
             min_por = samples[min_ind]
             sampled_p = torch.tensor(min_por).to(device)
-            print(sampled_p)
 
         elif repre == "cossim":
             """
