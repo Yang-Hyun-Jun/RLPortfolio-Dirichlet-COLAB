@@ -132,6 +132,31 @@ class Actor(nn.Module):
             min_por = samples[min_ind]
             sampled_p = torch.tensor(min_por).to(device)
 
+        elif repre == "costmix":
+            """
+            하위 cost + 최대 기대 수익률 
+            """
+            num_sample = 10000
+            now_port = utils.NOW_PORT
+            samples_ = dirichlet.sample(sample_shape=[num_sample]).view(-1, N).cpu().numpy()
+            samples = np.zeros(shape=(samples_.shape[0]+1, samples_.shape[1]))
+            samples[:num_sample] = samples_
+            samples[num_sample] = dirichlet.mean.cpu().numpy().reshape(-1, N)
+
+            fees = [utils.check_fee((sample - now_port)[1:]) for sample in samples]
+            fees_ = fees.copy()
+            fees_.sort(reverse=False)
+
+            low_fee = fees_[:10]
+            low_ind = [fees.index(low) for low in low_fee]
+            low_por = samples[low_ind]
+            low_por = torch.tensor(low_por)
+
+            returns = [expected(utils.STOCK_LIST, torch.softmax(por[1:], dim=-1)) for por in low_por]
+            max_ind = np.argmax(returns)
+            max_por = low_por[max_ind]
+            sampled_p = max_por.to(device)
+
         elif repre == "cossim":
             """
             코사인 유사도
