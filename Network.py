@@ -359,7 +359,7 @@ class Actor(nn.Module):
             now_port = utils.NOW_PORT
             fees = [utils.check_fee((high.numpy() - now_port)[1:]) for high in high_por]
 
-            for _ in range(3):
+            for _ in range(4):
                 ind = np.argmin(fees)
                 fees.pop(ind)
                 high_por.pop(ind)
