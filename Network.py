@@ -347,7 +347,7 @@ class Actor(nn.Module):
             samples = dirichlet.sample(sample_shape=[10000]).view(-1, N).cpu()
             mean = dirichlet.mean[0].cpu().numpy()
             sims = [np.dot((mean - np.mean(mean)), (sample - np.mean(sample))) \
-                    / (norm(mean - np.mean(mean)) * norm(sample - np.mean(sample))) for sample in samples]
+                    / (norm(mean - np.mean(mean)) * norm(sample - np.mean(sample))) for sample in samples.numpy()]
             sims_ = sims.copy()
             sims_.sort(reverse=True)
 
