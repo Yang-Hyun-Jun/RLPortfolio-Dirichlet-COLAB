@@ -211,7 +211,7 @@ class Actor(nn.Module):
             high_por = samples[high_ind]
 
             now_port = utils.NOW_PORT
-            fees = [utils.check_fee((high.numpy() - now_port))[1:] for high in high_por]
+            fees = [utils.check_fee((high.numpy() - now_port)[1:])for high in high_por]
 
             min_ind = np.argmin(fees)
             min_por = high_por[min_ind]
@@ -357,7 +357,7 @@ class Actor(nn.Module):
             high_por = list(high_por)
 
             now_port = utils.NOW_PORT
-            fees = [utils.check_fee((high.numpy() - now_port))[1:] for high in high_por]
+            fees = [utils.check_fee((high.numpy() - now_port)[1:])for high in high_por]
 
             # for _ in range(6):
             #     ind = np.argmin(fees)
