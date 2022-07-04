@@ -12,7 +12,7 @@ from DataManager import expected
 from DataManager import variance
 
 device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
-
+torch.manual_seed(42)
 
 class Score(nn.Module):
     def __init__(self, state1_dim=5, state2_dim=2, output_dim=1):
