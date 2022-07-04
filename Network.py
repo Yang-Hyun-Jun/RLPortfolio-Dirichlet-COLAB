@@ -354,6 +354,7 @@ class Actor(nn.Module):
             high_sim = sims_[:10]
             high_ind = [sims.index(high) for high in high_sim]
             high_por = samples[high_ind]
+            high_por = list(high_por)
 
             now_port = utils.NOW_PORT
             fees = [utils.check_fee((now_port - high.numpy())[1:]) for high in high_por]
