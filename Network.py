@@ -358,6 +358,11 @@ class Actor(nn.Module):
             now_port = utils.NOW_PORT
             fees = [utils.check_fee((now_port - high.numpy())[1:]) for high in high_por]
 
+            for _ in range(3):
+                ind = np.argmin(fees)
+                fees.pop(ind)
+                high_por.pop(ind)
+
             min_ind = np.argmin(fees)
             min_por = high_por[min_ind]
             sampled_p = min_por.to(device)
