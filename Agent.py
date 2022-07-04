@@ -70,9 +70,9 @@ class agent(nn.Module):
         with torch.no_grad():
             self.actor.eval()
             sampled_p, log_prob = self.actor.sampling(state1, portfolio, Test)
-            sampled_p = sampled_p.cpu().numpy()
+            sampled_p = sampled_p.cpu().numpy().reshape(self.portfolio.shape)
             log_prob = log_prob.cpu().numpy()
-            action = (sampled_p[0] - self.portfolio)[1:]
+            action = (sampled_p - self.portfolio)[1:]
 
             print("sampled_p", sampled_p[0])
             print("port", self.portfolio)
