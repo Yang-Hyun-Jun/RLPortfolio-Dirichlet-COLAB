@@ -128,7 +128,7 @@ class Actor(nn.Module):
             samples[10000] = dirichlet.mean.cpu().numpy().reshape(-1, N)
 
             fees = [utils.check_fee((sample - now_port)[1:]) for sample in samples]
-            min_ind = np.argmax(fees)
+            min_ind = np.argmin(fees)
             min_por = samples[min_ind]
             sampled_p = torch.tensor(min_por).to(device)
 
