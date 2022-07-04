@@ -75,7 +75,7 @@ class agent(nn.Module):
             action = (sampled_p[0] - self.portfolio)[1:]
             confidence = abs(action)
             self.actor.train()
-        return action, confidence, log_prob, sampled_p
+        return action, confidence, log_prob
 
     def decide_trading_unit(self, confidence, price):
         trading_amount = self.portfolio_value * confidence
