@@ -147,7 +147,7 @@ class Actor(nn.Module):
             fees_ = fees.copy()
             fees_.sort()
 
-            low_fee = fees_[:30]
+            low_fee = fees_[:10]
             low_ind = [fees.index(low) for low in low_fee]
             low_por = samples[low_ind]
             low_por = list(low_por)
@@ -155,7 +155,7 @@ class Actor(nn.Module):
 
             returns = [expected(utils.STOCK_LIST, torch.softmax(torch.tensor(por[1:]), dim=-1)) for por in low_por]
 
-            for _ in range(3):
+            for _ in range(5):
                 ind = np.argmax(returns)
                 returns.pop(ind)
                 low_por.pop(ind)
