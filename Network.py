@@ -145,7 +145,7 @@ class Actor(nn.Module):
 
             fees = [utils.check_fee((sample - now_port)[1:]) for sample in samples]
             fees_ = fees.copy()
-            fees_.sort(reverse=True)
+            fees_.sort()
 
             low_fee = fees_[:30]
             low_ind = [fees.index(low) for low in low_fee]
@@ -153,7 +153,7 @@ class Actor(nn.Module):
             low_por = torch.tensor(low_por)
 
             returns = [expected(utils.STOCK_LIST, torch.softmax(por[1:], dim=-1)) for por in low_por]
-            max_ind = np.argmax(returns)
+            max_ind = np.argmin(returns)
             max_por = low_por[max_ind]
             sampled_p = max_por.to(device)
 
