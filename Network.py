@@ -147,15 +147,17 @@ class Actor(nn.Module):
             fees_ = fees.copy()
             fees_.sort()
 
-            low_fee = fees_[100:130]
+            low_fee = fees_[:30]
             low_ind = [fees.index(low) for low in low_fee]
             low_por = samples[low_ind]
             low_por = torch.tensor(low_por)
 
-            returns = [expected(utils.STOCK_LIST, torch.softmax(por[1:], dim=-1)) for por in low_por]
-            max_ind = np.argmax(returns)
+            # returns = [expected(utils.STOCK_LIST, torch.softmax(por[1:], dim=-1)) for por in low_por]
+            vars = [VaR(utils.STOCK_LIST, torch.softmax(por[1:], dim=-1)) for por in low_por]
+            max_ind = np.argmax(vars)
             max_por = low_por[max_ind]
             sampled_p = max_por.to(device)
+
 
         elif repre == "cossim":
             """
