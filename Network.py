@@ -145,7 +145,7 @@ class Actor(nn.Module):
 
             fees = [utils.check_fee((sample - now_port)[1:]) for sample in samples]
             fees_ = fees.copy()
-            fees_.sort()
+            fees_.sort(reverse=True)
 
             low_fee = fees_[:30]
             low_ind = [fees.index(low) for low in low_fee]
