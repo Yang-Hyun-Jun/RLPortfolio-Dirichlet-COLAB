@@ -160,7 +160,7 @@ class Actor(nn.Module):
                 returns.pop(ind)
                 low_por.pop(ind)
 
-            max_ind = np.argmin(returns)
+            max_ind = np.argmax(returns)
             max_por = low_por[max_ind]
             sampled_p = torch.tensor(max_por).to(device)
             # sampled_p = max_por.to(device)
