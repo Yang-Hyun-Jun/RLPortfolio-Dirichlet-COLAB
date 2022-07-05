@@ -147,7 +147,7 @@ class Actor(nn.Module):
             fees_ = fees.copy()
             fees_.sort()
 
-            low_fee = fees_[500:530]
+            low_fee = fees_[200:230]
             low_ind = [fees.index(low) for low in low_fee]
             low_por = samples[low_ind]
             low_por = torch.tensor(low_por)
