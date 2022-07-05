@@ -164,7 +164,8 @@ class Actor(nn.Module):
 
             max_ind = np.argmin(returns)
             max_por = low_por[max_ind]
-            sampled_p = max_por.to(device)
+            sampled_p = torch.tensor(max_por).to(device)
+            # sampled_p = max_por.to(device)
 
 
         elif repre == "cossim":
