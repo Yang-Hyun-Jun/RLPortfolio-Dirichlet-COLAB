@@ -155,12 +155,12 @@ class Actor(nn.Module):
 
             returns = [expected(utils.STOCK_LIST, torch.softmax(torch.tensor(por[1:]), dim=-1)) for por in low_por]
 
-            for _ in range(5):
-                ind = np.argmin(returns)
+            for _ in range(8):
+                ind = np.argmax(returns)
                 returns.pop(ind)
                 low_por.pop(ind)
 
-            max_ind = np.argmin(returns)
+            max_ind = np.argmax(returns)
             max_por = low_por[max_ind]
             sampled_p = torch.tensor(max_por).to(device)
             # sampled_p = max_por.to(device)
