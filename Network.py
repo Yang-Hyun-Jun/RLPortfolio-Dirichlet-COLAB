@@ -155,10 +155,10 @@ class Actor(nn.Module):
 
             returns = [expected(utils.STOCK_LIST, torch.softmax(torch.tensor(por[1:]), dim=-1)) for por in low_por]
 
-            for _ in range(5):
-                ind = np.argmax(returns)
-                returns.pop(ind)
-                low_por.pop(ind)
+            # for _ in range(5):
+            #     ind = np.argmax(returns)
+            #     returns.pop(ind)
+            #     low_por.pop(ind)
 
             max_ind = np.argmax(returns)
             max_por = low_por[max_ind]
