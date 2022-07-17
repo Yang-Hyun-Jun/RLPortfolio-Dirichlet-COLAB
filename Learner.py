@@ -10,6 +10,14 @@ from Network import Critic
 from Network import Score
 from Metrics import Metrics
 
+seed = 1
+#넘파이 랜덤 시드 고정
+np.random.seed(seed)
+#파이토치 랜덤 시드 고정
+torch.manual_seed(seed)
+torch.cuda.manual_seed(seed)
+torch.cuda.manual_seed_all(seed)
+
 device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 
 
